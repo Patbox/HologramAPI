@@ -1,0 +1,4 @@
+accessWidener v1 named
+
+accessible class net/minecraft/server/world/ThreadedAnvilChunkStorage$EntityTracker;
+accessible field net/minecraft/server/world/ThreadedAnvilChunkStorage$EntityTracker playersTracking Ljava/util/Set;

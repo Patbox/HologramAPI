@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "eu.pb4.holograms.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "EntityMixin",
+    "ServerPlayerEntityMixin",
+    "ThreadedAnvilChunkStorageMixin",
+    "WorldChunkMixin",
+    "accessors.AreaEffectCloudEntityAccessor",
+    "accessors.EntityAccessor",
+    "accessors.EntityPassengersSetS2CPacketAccessor",
+    "accessors.EntityPositionS2CPacketAccessor",
+    "accessors.EntityTrackerUpdateS2CPacketAccessor",
+    "accessors.ItemEntityAccessor",
+    "accessors.MobSpawnS2CPacketAccessor",
+    "accessors.ThreadedAnvilChunkStorageAccessor",
+    "accessors.ThrownItemEntityAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

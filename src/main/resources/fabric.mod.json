@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "hologram-api",
+  "version": "${version}",
+
+  "name": "Hologram API",
+  "description": "Library for creating server side holograms!",
+  "authors": [
+    "Patbox"
+  ],
+  "contact": {
+    "homepage": "https://pb4.eu",
+    "sources": "https://github.com/Patbox/HologramAPI"
+  },
+  "license": "LGPLv3",
+  "accessWidener": "hologramapi.accesswidener",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "eu.pb4.holograms.HologramAPIMod"
+    ]
+  },
+  "mixins": [
+    "hologramapi.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.16.x"
+  }
+}
