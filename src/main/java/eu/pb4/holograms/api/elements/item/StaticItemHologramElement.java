@@ -28,7 +28,7 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
     public StaticItemHologramElement(ItemStack stack) {
         super(stack);
         this.height = 0.5;
-        this.entityId = this.createEntityId();
+        this.entityId = EntityAccessor.getMaxEntityId().incrementAndGet();
         this.entityIds.add(entityId);
     }
 
@@ -36,7 +36,7 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
     public void createPackets(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
 
-        player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, Util.NIL_UUID, pos.x, pos.y, pos.z, 0, 0, EntityType.SNOWBALL, 0, Vec3d.ZERO));
+        player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, AbstractHologram.HOLOGRAM_ENTITY_UUID, pos.x, pos.y, pos.z, 0, 0, EntityType.SNOWBALL, 0, Vec3d.ZERO));
 
         EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
         EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;

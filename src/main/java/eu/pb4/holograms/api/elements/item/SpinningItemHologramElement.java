@@ -28,8 +28,8 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
     public SpinningItemHologramElement(ItemStack stack) {
         super(stack);
         this.height = 0.45;
-        this.itemId = this.createEntityId();
-        this.helperId = this.createEntityId();
+        this.itemId = EntityAccessor.getMaxEntityId().incrementAndGet();
+        this.helperId = EntityAccessor.getMaxEntityId().incrementAndGet();
 
         this.entityIds.add(itemId);
         this.entityIds.add(helperId);
@@ -39,7 +39,7 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
     public void createPackets(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
         {
-            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(itemId, Util.NIL_UUID, pos.x, pos.y, pos.z, 0, 0, EntityType.ITEM, 0, Vec3d.ZERO));
+            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(itemId, AbstractHologram.HOLOGRAM_ENTITY_UUID, pos.x, pos.y, pos.z, 0, 0, EntityType.ITEM, 0, Vec3d.ZERO));
 
             EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
             EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
@@ -54,7 +54,7 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
         }
 
         {
-            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(helperId, Util.NIL_UUID, pos.x, pos.y - 0.6, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
+            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(helperId, AbstractHologram.HOLOGRAM_ENTITY_UUID, pos.x, pos.y - 0.6, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
 
             EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
             EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;

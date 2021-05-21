@@ -70,7 +70,10 @@ public class TestMod implements ModInitializer {
 
         if (type == null) {
             pos = 0;
-            type = Registry.ENTITY_TYPE.get(pos);        }
+            type = Registry.ENTITY_TYPE.get(pos);
+        }
+
+        System.out.println(type);
 
         return type;
     }
@@ -90,8 +93,20 @@ public class TestMod implements ModInitializer {
     private static int test3(CommandContext<ServerCommandSource> objectCommandContext) {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
-            HOLOGRAM.removePlayer(player);
 
+            PigEntity pig = EntityType.PIG.create(player.world);
+            pig.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), 0, 0);
+
+            System.out.println(pig);
+            EntityHologram hologram = new EntityHologram(pig, new Vec3d(2, 2, 2));
+
+            hologram.addText(new LiteralText("Hello There"));
+            hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
+            hologram.build();
+
+            player.world.spawnEntity(pig);
+
+            System.out.println(hologram.getEntityIds());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,9 +127,8 @@ public class TestMod implements ModInitializer {
             hologram.addText(new LiteralText("Hello There"));
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
 
-            hologram.addPlayer(player);
             hologram.build();
-
+            System.out.println(hologram.getEntityIds());
         } catch (Exception e) {
             e.printStackTrace();
         }

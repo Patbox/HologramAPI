@@ -43,7 +43,7 @@ public class CubeHitboxHologramElement extends AbstractHologramElement {
             accessor.setY(pos.y);
             accessor.setZ(pos.z);
             accessor.setEntityType(Registry.ENTITY_TYPE.getRawId(EntityType.SLIME));
-            accessor.setUUID(Util.NIL_UUID);
+            accessor.setUUID(AbstractHologram.HOLOGRAM_ENTITY_UUID);
 
             player.networkHandler.sendPacket(packet);
         }

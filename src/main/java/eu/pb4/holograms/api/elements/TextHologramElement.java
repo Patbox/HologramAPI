@@ -30,7 +30,7 @@ public class TextHologramElement extends AbstractHologramElement {
 
     public TextHologramElement(Text text) {
         super();
-        this.entityId = this.createEntityId();
+        this.entityId = EntityAccessor.getMaxEntityId().incrementAndGet();
         this.getEntityIds().add(this.entityId);
         this.text = text;
         this.height = 0.26;
@@ -51,7 +51,7 @@ public class TextHologramElement extends AbstractHologramElement {
     @Override
     public void createPackets(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
-        player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, Util.NIL_UUID, pos.x, pos.y - 0.9, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
+        player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, AbstractHologram.HOLOGRAM_ENTITY_UUID, pos.x, pos.y - 0.9, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
 
         EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
         EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;

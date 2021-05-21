@@ -7,6 +7,7 @@ import eu.pb4.holograms.mixin.accessors.ThreadedAnvilChunkStorageAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,14 +23,34 @@ import java.util.Set;
 public abstract class EntityMixin implements EntityHologramHolder {
     @Shadow public World world;
 
-    @Shadow public abstract World getEntityWorld();
-
     @Shadow private int entityId;
+
+    @Shadow public abstract String toString();
+
     @Unique
     private final Set<EntityHologram> attachedHolograms = new HashSet<>();
 
+    @Unique
+    private boolean addPlayersOnFirstTick = false;
+
     @Inject(method = "tick", at = @At("TAIL"))
     private void tickHolograms(CallbackInfo ci) {
+        if (this.addPlayersOnFirstTick) {
+            ThreadedAnvilChunkStorage.EntityTracker tracker = ((ThreadedAnvilChunkStorageAccessor) ((ServerWorld) this.world).getChunkManager().threadedAnvilChunkStorage)
+                    .getEntityTrackers().get(this.entityId);
+
+            if (tracker != null) {
+                for (ServerPlayerEntity player : tracker.playersTracking) {
+                    for (EntityHologram hologram : this.attachedHolograms) {
+                        hologram.addPlayer(player);
+                    }
+                }
+
+                this.addPlayersOnFirstTick = false;
+
+            }
+        }
+
         for (EntityHologram hologram : this.attachedHolograms) {
             try {
                 hologram.tick();
@@ -38,7 +59,6 @@ public abstract class EntityMixin implements EntityHologramHolder {
                 this.removeEntityHologram(hologram);
             }
         }
-
     }
 
     @Inject(method = "onStartedTrackingBy", at = @At("TAIL"))
@@ -68,9 +88,15 @@ public abstract class EntityMixin implements EntityHologramHolder {
     public void addEntityHologram(EntityHologram hologram) {
         this.attachedHolograms.add(hologram);
 
-        for (ServerPlayerEntity player : ((ThreadedAnvilChunkStorageAccessor) ((ServerWorld) this.world).getChunkManager().threadedAnvilChunkStorage)
-                .getEntityTrackers().get(this.entityId).playersTracking) {
-            hologram.addPlayer(player);
+        ThreadedAnvilChunkStorage.EntityTracker tracker = ((ThreadedAnvilChunkStorageAccessor) ((ServerWorld) this.world).getChunkManager().threadedAnvilChunkStorage)
+                .getEntityTrackers().get(this.entityId);
+
+        if (tracker != null) {
+            for (ServerPlayerEntity player : tracker.playersTracking) {
+                hologram.addPlayer(player);
+            }
+        } else {
+            this.addPlayersOnFirstTick = true;
         }
     }
 

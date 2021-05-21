@@ -28,6 +28,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public abstract class AbstractHologram {
+    public static final UUID HOLOGRAM_ENTITY_UUID = UUID.fromString("00000000-0000-9000-0000-000040706948");
+
     protected final ServerWorld world;
     protected List<HologramElement> elements = new ArrayList<>();
     protected Vec3d position;

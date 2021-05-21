@@ -35,10 +35,6 @@ public abstract class AbstractHologramElement implements HologramElement {
     @Override
     public abstract void createPackets(ServerPlayerEntity player, AbstractHologram hologram);
 
-    protected int createEntityId() {
-        return EntityAccessor.getMaxEntityId().incrementAndGet();
-    }
-
     @Override
     public void onTick(AbstractHologram hologram) {}
 
