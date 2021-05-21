@@ -22,6 +22,7 @@ import java.util.Optional;
 
 public class TextHologramElement extends AbstractHologramElement {
     protected Text text;
+    protected int entityId;
 
     public TextHologramElement() {
         this(new LiteralText(""));
@@ -29,7 +30,8 @@ public class TextHologramElement extends AbstractHologramElement {
 
     public TextHologramElement(Text text) {
         super();
-        this.getEntityIds().add(this.createEntityId());
+        this.entityId = this.createEntityId();
+        this.getEntityIds().add(this.entityId);
         this.text = text;
         this.height = 0.26;
     }
@@ -48,14 +50,13 @@ public class TextHologramElement extends AbstractHologramElement {
 
     @Override
     public void createPackets(ServerPlayerEntity player, AbstractHologram hologram) {
-        int id = this.getEntityIds().getInt(0);
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
-        player.networkHandler.sendPacket(new EntitySpawnS2CPacket(id, Util.NIL_UUID, pos.x, pos.y - 0.9, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
+        player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, Util.NIL_UUID, pos.x, pos.y - 0.9, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
 
         EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
         EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
-        accessor.setId(id);
+        accessor.setId(this.entityId);
 
         List<DataTracker.Entry<?>> data = new ArrayList<>();
         data.add(new DataTracker.Entry<>(AreaEffectCloudEntityAccessor.getRadius(), 0f));
@@ -70,7 +71,7 @@ public class TextHologramElement extends AbstractHologramElement {
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
         EntityPositionS2CPacket packet = new EntityPositionS2CPacket();
         EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
-        accessor.setId(this.getEntityIds().getInt(0));
+        accessor.setId(this.entityId);
         Vec3d pos = hologram.getElementPosition(this).add(this.getOffset());
         accessor.setX(pos.x);
         accessor.setY(pos.y - 0.9);

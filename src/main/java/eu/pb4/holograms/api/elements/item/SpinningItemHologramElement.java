@@ -1,5 +1,6 @@
-package eu.pb4.holograms.api.elements;
+package eu.pb4.holograms.api.elements.item;
 
+import eu.pb4.holograms.api.elements.item.AbstractItemHologramElement;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.*;
 import net.minecraft.entity.EntityType;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpinningItemHologramElement extends AbstractItemHologramElement {
+    protected int itemId;
+    protected int helperId;
 
     public SpinningItemHologramElement() {
         this(ItemStack.EMPTY);
@@ -25,14 +28,16 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
     public SpinningItemHologramElement(ItemStack stack) {
         super(stack);
         this.height = 0.45;
-        this.entityIds.add(this.createEntityId());
-        this.entityIds.add(this.createEntityId());
+        this.itemId = this.createEntityId();
+        this.helperId = this.createEntityId();
+
+        this.entityIds.add(itemId);
+        this.entityIds.add(helperId);
     }
 
     @Override
     public void createPackets(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
-        int itemId = this.getEntityIds().getInt(0);
         {
             player.networkHandler.sendPacket(new EntitySpawnS2CPacket(itemId, Util.NIL_UUID, pos.x, pos.y, pos.z, 0, 0, EntityType.ITEM, 0, Vec3d.ZERO));
 
@@ -48,7 +53,6 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
             player.networkHandler.sendPacket(packet);
         }
 
-        int helperId = this.getEntityIds().getInt(1);
         {
             player.networkHandler.sendPacket(new EntitySpawnS2CPacket(helperId, Util.NIL_UUID, pos.x, pos.y - 0.6, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
 
@@ -79,7 +83,7 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
 
         EntityPositionS2CPacket packet = new EntityPositionS2CPacket();
         EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
-        accessor.setId(this.getEntityIds().getInt(1));
+        accessor.setId(this.helperId);
         accessor.setX(pos.x);
         accessor.setY(pos.y - 0.6);
         accessor.setZ(pos.z);

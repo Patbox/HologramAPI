@@ -1,5 +1,6 @@
-package eu.pb4.holograms.api.elements;
+package eu.pb4.holograms.api.elements.item;
 
+import eu.pb4.holograms.api.elements.AbstractHologramElement;
 import net.minecraft.item.ItemStack;
 
 public abstract class AbstractItemHologramElement extends AbstractHologramElement {

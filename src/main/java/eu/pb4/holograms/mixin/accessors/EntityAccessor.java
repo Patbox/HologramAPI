@@ -35,4 +35,9 @@ public interface EntityAccessor {
     static TrackedData<Boolean> getSilent() {
         throw new AssertionError();
     }
+
+    @Accessor("FLAGS")
+    static TrackedData<Byte> getFlags() {
+        throw new AssertionError();
+    }
 }

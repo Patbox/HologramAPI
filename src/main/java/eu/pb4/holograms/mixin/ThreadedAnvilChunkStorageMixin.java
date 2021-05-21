@@ -22,13 +22,9 @@ import java.util.function.BooleanSupplier;
 
 @Mixin(ThreadedAnvilChunkStorage.class)
 public abstract class ThreadedAnvilChunkStorageMixin {
-    @Shadow private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> chunkHolders;
-
     @Shadow @Final private LongSet loadedChunks;
 
     @Shadow @Nullable protected abstract ChunkHolder getChunkHolder(long pos);
-
-    @Shadow @Final private Int2ObjectMap<ThreadedAnvilChunkStorage.EntityTracker> entityTrackers;
 
     @Inject(method = "sendChunkDataPackets", at = @At("TAIL"))
     private void addToHolograms(ServerPlayerEntity player, Packet<?>[] packets, WorldChunk chunk, CallbackInfo ci) {

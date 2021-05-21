@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
 public class Holograms {
-    public static WorldHologram build(ServerWorld world, Vec3d pos, Text... texts) {
+    public static WorldHologram create(ServerWorld world, Vec3d pos, Text... texts) {
         WorldHologram hologram = new WorldHologram(world, pos);
         for (Text text : texts) {
             hologram.addText(text);
@@ -17,7 +17,7 @@ public class Holograms {
         return hologram;
     }
 
-    public static WorldHologram build(ServerWorld world, Vec3d pos, HologramElement... elements) {
+    public static WorldHologram create(ServerWorld world, Vec3d pos, HologramElement... elements) {
         WorldHologram hologram = new WorldHologram(world, pos);
         for (HologramElement element : elements) {
             hologram.addElement(element);
@@ -25,7 +25,7 @@ public class Holograms {
         return hologram;
     }
 
-    public static EntityHologram build(Entity entity, Vec3d offset, Text... texts) {
+    public static EntityHologram create(Entity entity, Vec3d offset, Text... texts) {
         EntityHologram hologram = new EntityHologram(entity, offset);
         for (Text text : texts) {
             hologram.addText(text);
@@ -33,7 +33,7 @@ public class Holograms {
         return hologram;
     }
 
-    public static EntityHologram build(Entity entity, Vec3d offset, HologramElement... elements) {
+    public static EntityHologram create(Entity entity, Vec3d offset, HologramElement... elements) {
         EntityHologram hologram = new EntityHologram(entity, offset);
         for (HologramElement element : elements) {
             hologram.addElement(element);

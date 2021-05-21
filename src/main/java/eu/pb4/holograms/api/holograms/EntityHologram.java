@@ -39,9 +39,9 @@ public class EntityHologram extends AbstractHologram {
     }
 
     @Override
-    public void create() {
+    public void build() {
         ((EntityHologramHolder) this.entity).addEntityHologram(this);
-        super.create();
+        super.build();
     }
 
     @Override

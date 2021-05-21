@@ -12,7 +12,7 @@ import java.util.Set;
 @Mixin(WorldChunk.class)
 public class WorldChunkMixin implements HologramHolder {
     @Unique
-    private Set<AbstractHologram> holograms = new HashSet<>();
+    private final Set<AbstractHologram> holograms = new HashSet<>();
 
     public void addHologram(AbstractHologram hologram) {
         this.holograms.add(hologram);

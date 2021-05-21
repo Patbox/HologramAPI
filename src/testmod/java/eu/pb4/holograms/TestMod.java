@@ -1,82 +1,55 @@
 package eu.pb4.holograms;
 
 import com.mojang.brigadier.context.CommandContext;
+import eu.pb4.holograms.api.InteractionType;
+import eu.pb4.holograms.api.elements.SpacingHologramElement;
+import eu.pb4.holograms.api.elements.clickable.CubeHitboxHologramElement;
+import eu.pb4.holograms.api.elements.clickable.EntityHologramElement;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.api.holograms.EntityHologram;
 import eu.pb4.holograms.api.holograms.WorldHologram;
-import eu.pb4.holograms.api.elements.EmptyHologramElement;
-import eu.pb4.holograms.api.elements.EntityHologramElement;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.item.Items;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class TestMod implements ModInitializer {
     static WorldHologram HOLOGRAM = null;
-    public void onInitialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-            dispatcher.register(
-                literal("test").executes(TestMod::test)
-            );
-            dispatcher.register(
-                    literal("test2").executes(TestMod::test2)
-            );
-            dispatcher.register(
-                    literal("test3").executes(TestMod::test3)
-            );
-
-            dispatcher.register(
-                    literal("test4").executes(TestMod::test4)
-            );
-        });
-    }
-
+    static int pos = -1;
 
     private static int test(CommandContext<ServerCommandSource> objectCommandContext) {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
-            Entity entity = new CreeperEntity(EntityType.CREEPER, player.world);
 
             WorldHologram hologram = new WorldHologram(player.getServerWorld(), player.getPos());
 
             hologram.addText(new LiteralText("hello"));
-            hologram.addElement(new EntityHologramElement(entity) {
-                byte yaw = 0;
-
-                @Override
-                public void onTick(AbstractHologram hologram) {
-                    super.onTick(hologram);
-                    this.yaw++;
-                    Packet packet = new EntitySetHeadYawS2CPacket(this.entity, yaw);
-                    Packet packet2 = new EntityS2CPacket.Rotate(this.entity.getEntityId(), this.yaw, this.yaw, true);
-
-                    for (ServerPlayerEntity player : hologram.getPlayerSet()) {
-                        player.networkHandler.sendPacket(packet);
-                        player.networkHandler.sendPacket(packet2);
-                    }
-                }
-            });
+            hologram.addElement(new EntityHologramElement(getEntityType(false).create(player.world)));
             hologram.addText(new LiteralText("test"));
             hologram.addItemStack(Items.POTATO.getDefaultStack(), false);
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
-            hologram.addText(new LiteralText("2"));
-            hologram.setElement(6, new EmptyHologramElement());
+            hologram.addText(new LiteralText("« »"));
+            hologram.addElement(new CubeHitboxHologramElement(3, new Vec3d(0, 0.2, 0)) {
+                @Override
+                public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
+                    super.onClick(hologram, player, type, hand, vec, entityId);
+                    hologram.setElement(1, new EntityHologramElement(getEntityType(type == InteractionType.ATTACK).create(player.world)));
+                }
+            });
             hologram.addText(new LiteralText("434234254234562653247y4575678rt").formatted(Formatting.AQUA));
 
-            hologram.create();
+            hologram.build();
 
             HOLOGRAM = hologram;
 
@@ -84,6 +57,22 @@ public class TestMod implements ModInitializer {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    private static EntityType getEntityType(boolean previous) {
+        if (previous) {
+            pos--;
+        } else {
+            pos++;
+        }
+
+        EntityType type = Registry.ENTITY_TYPE.get(pos);
+
+        if (type == null) {
+            pos = 0;
+            type = Registry.ENTITY_TYPE.get(pos);        }
+
+        return type;
     }
 
     private static int test2(CommandContext<ServerCommandSource> objectCommandContext) {
@@ -124,12 +113,30 @@ public class TestMod implements ModInitializer {
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
 
             hologram.addPlayer(player);
-            hologram.create();
+            hologram.build();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public void onInitialize() {
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+            dispatcher.register(
+                    literal("test").executes(TestMod::test)
+            );
+            dispatcher.register(
+                    literal("test2").executes(TestMod::test2)
+            );
+            dispatcher.register(
+                    literal("test3").executes(TestMod::test3)
+            );
+
+            dispatcher.register(
+                    literal("test4").executes(TestMod::test4)
+            );
+        });
     }
 
 }

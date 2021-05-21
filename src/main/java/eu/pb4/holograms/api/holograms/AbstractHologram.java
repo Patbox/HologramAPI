@@ -1,16 +1,27 @@
 package eu.pb4.holograms.api.holograms;
 
 import com.google.common.collect.Lists;
-import eu.pb4.holograms.api.elements.*;
+import eu.pb4.holograms.api.InteractionType;
+import eu.pb4.holograms.api.elements.EmptyHologramElement;
+import eu.pb4.holograms.api.elements.HologramElement;
+import eu.pb4.holograms.api.elements.TextHologramElement;
+import eu.pb4.holograms.api.elements.clickable.EntityHologramElement;
+import eu.pb4.holograms.api.elements.item.SpinningItemHologramElement;
+import eu.pb4.holograms.api.elements.item.StaticItemHologramElement;
 import eu.pb4.holograms.interfaces.HologramHolder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +32,9 @@ public abstract class AbstractHologram {
     protected List<HologramElement> elements = new ArrayList<>();
     protected Vec3d position;
     protected Set<ServerPlayerEntity> players = new HashSet<>();
+    protected Object2IntMap<ServerPlayerEntity> playerLastInteraction = new Object2IntArrayMap<>();
+
+    protected IntList entityIds = new IntArrayList();
     protected boolean isActive = false;
 
     public AbstractHologram(ServerWorld world, Vec3d position) {
@@ -71,8 +85,21 @@ public abstract class AbstractHologram {
         return this.setElement(pos, isStatic ? new StaticItemHologramElement(stack) : new SpinningItemHologramElement(stack));
     }
 
+    public int addEntity(Entity entity) {
+        return this.addElement(new EntityHologramElement(entity));
+    }
+
+    public int addEntity(int pos, Entity entity) {
+        return this.addElement(pos, new EntityHologramElement(entity));
+    }
+
+    public int setEntity(int pos, Entity entity) {
+        return this.setElement(pos, new EntityHologramElement(entity));
+    }
+
     public int addElement(HologramElement element) {
         this.elements.add(element);
+        this.entityIds.addAll(element.getEntityIds());
         if (isActive) {
             for (ServerPlayerEntity player : this.players) {
                 element.createPackets(player, this);
@@ -85,6 +112,7 @@ public abstract class AbstractHologram {
 
     public int addElement(int pos, HologramElement element) {
         this.elements.add(pos, element);
+        this.entityIds.addAll(element.getEntityIds());
         if (isActive) {
             for (ServerPlayerEntity player : this.players) {
                 element.createPackets(player, this);
@@ -97,6 +125,8 @@ public abstract class AbstractHologram {
 
     public int setElement(int pos, HologramElement element) {
         if (pos >= 0) {
+            this.entityIds.addAll(element.getEntityIds());
+
             if (pos >= this.elements.size()) {
                 int needed = pos - this.elements.size();
                 for (int x = 0; x < needed; x++) {
@@ -105,6 +135,7 @@ public abstract class AbstractHologram {
                 this.elements.add(element);
             } else {
                 int[] ids = this.elements.get(pos).getEntityIds().toIntArray();
+                this.entityIds.removeAll(this.elements.get(pos).getEntityIds());
                 this.elements.set(pos, element);
 
                 if (isActive) {
@@ -142,6 +173,14 @@ public abstract class AbstractHologram {
         return this.elements.indexOf(element);
     }
 
+    public void removeElement(HologramElement element) {
+        this.elements.remove(element);
+    }
+
+    public void removeElement(int pos) {
+        this.elements.remove(pos);
+    }
+
     @Nullable
     public Vec3d getElementPosition(HologramElement element) {
         double height = 0;
@@ -163,7 +202,7 @@ public abstract class AbstractHologram {
         }
     }
 
-    public void create() {
+    public void build() {
         if (!isActive) {
             this.isActive = true;
             for (ServerPlayerEntity player : this.players) {
@@ -188,6 +227,10 @@ public abstract class AbstractHologram {
                 }
             }
         }
+    }
+
+    public boolean isActive() {
+        return this.isActive;
     }
 
     protected Packet<?> getDestroyPacket() {
@@ -222,6 +265,7 @@ public abstract class AbstractHologram {
     public void removePlayer(ServerPlayerEntity player) {
         if (this.players.contains(player)) {
             this.players.remove(player);
+            this.playerLastInteraction.removeInt(player);
             ((HologramHolder) player).removeHologram(this);
             if (isActive) {
                 if (!player.isDisconnected()) {
@@ -237,5 +281,25 @@ public abstract class AbstractHologram {
 
     public boolean canAddPlayer(ServerPlayerEntity player) {
         return true;
+    }
+
+    public IntList getEntityIds() {
+        return IntLists.unmodifiable(this.entityIds);
+    }
+
+    public void click(ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d hitPosition, int id) {
+        int lastInteractionTick = this.playerLastInteraction.getInt(player);
+
+        if (lastInteractionTick == player.age) {
+            return;
+        }
+        this.playerLastInteraction.put(player, player.age);
+
+        for (HologramElement element : this.elements) {
+            if (element.getEntityIds().contains(id)) {
+                element.onClick(this, player, type, hand, hitPosition, id);
+                return;
+            }
+        }
     }
 }

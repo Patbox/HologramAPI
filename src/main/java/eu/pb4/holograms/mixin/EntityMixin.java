@@ -26,7 +26,7 @@ public abstract class EntityMixin implements EntityHologramHolder {
 
     @Shadow private int entityId;
     @Unique
-    private Set<EntityHologram> attachedHolograms = new HashSet<>();
+    private final Set<EntityHologram> attachedHolograms = new HashSet<>();
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tickHolograms(CallbackInfo ci) {
