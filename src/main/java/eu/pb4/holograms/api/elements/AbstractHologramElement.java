@@ -2,7 +2,6 @@ package eu.pb4.holograms.api.elements;
 
 import eu.pb4.holograms.api.InteractionType;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
-import eu.pb4.holograms.mixin.accessors.EntityAccessor;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.network.ServerPlayerEntity;

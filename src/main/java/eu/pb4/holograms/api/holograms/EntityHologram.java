@@ -10,7 +10,13 @@ public class EntityHologram extends AbstractHologram {
     protected Entity entity;
 
     public EntityHologram(Entity entity, Vec3d offset) {
-        super((ServerWorld) entity.world, entity.getPos().add(offset));
+        super((ServerWorld) entity.world, entity.getPos().add(offset), VerticalAlign.TOP);
+        this.offset = offset;
+        this.entity = entity;
+    }
+
+    public EntityHologram(Entity entity, Vec3d offset, VerticalAlign alignment) {
+        super((ServerWorld) entity.world, entity.getPos().add(offset), alignment);
         this.offset = offset;
         this.entity = entity;
     }

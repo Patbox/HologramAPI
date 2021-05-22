@@ -1,6 +1,5 @@
 package eu.pb4.holograms.api.elements.item;
 
-import eu.pb4.holograms.api.elements.item.AbstractItemHologramElement;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.*;
 import net.minecraft.entity.EntityType;
@@ -11,11 +10,11 @@ import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SpinningItemHologramElement extends AbstractItemHologramElement {
     protected int itemId;
@@ -93,4 +92,24 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
         player.networkHandler.sendPacket(packet);
     }
 
+    @Override
+    public void onTick(AbstractHologram hologram) {
+        if (this.isDirty) {
+            EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
+            EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+
+            accessor.setId(this.itemId);
+            List<DataTracker.Entry<?>> data = new ArrayList<>();
+            data.add(new DataTracker.Entry<>(ItemEntityAccessor.getStack(), this.itemStack));
+            accessor.setTrackedValues(data);
+
+            for (ServerPlayerEntity player : hologram.getPlayerSet()) {
+                player.networkHandler.sendPacket(packet);
+            }
+
+            this.isDirty = false;
+        }
+
+        super.onTick(hologram);
+    }
 }

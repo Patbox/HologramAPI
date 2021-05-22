@@ -1,4 +1,4 @@
-package eu.pb4.holograms.api.elements;
+package eu.pb4.holograms.api.elements.text;
 
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.AreaEffectCloudEntityAccessor;
@@ -13,39 +13,22 @@ import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class TextHologramElement extends AbstractHologramElement {
-    protected Text text;
-    protected int entityId;
+public class StaticTextHologramElement extends AbstractTextHologramElement {
 
-    public TextHologramElement() {
+    public StaticTextHologramElement() {
         this(new LiteralText(""));
     }
 
-    public TextHologramElement(Text text) {
-        super();
+    public StaticTextHologramElement(Text text) {
+        super(text);
         this.entityId = EntityAccessor.getMaxEntityId().incrementAndGet();
         this.getEntityIds().add(this.entityId);
-        this.text = text;
-        this.height = 0.26;
-    }
-
-    public Text getText() {
-        return this.text;
-    }
-
-    public Text getTextFor(ServerPlayerEntity player) {
-        return this.getText();
-    }
-
-    public void setText(Text text) {
-        this.text = text;
     }
 
     @Override
@@ -81,5 +64,26 @@ public class TextHologramElement extends AbstractHologramElement {
         accessor.setYaw((byte) 0);
 
         player.networkHandler.sendPacket(packet);
+    }
+
+    @Override
+    public void onTick(AbstractHologram hologram) {
+        if (this.isDirty) {
+            for (ServerPlayerEntity player : hologram.getPlayerSet()) {
+                EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
+                EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+
+                accessor.setId(this.entityId);
+                List<DataTracker.Entry<?>> data = new ArrayList<>();
+                data.add(new DataTracker.Entry<>(EntityAccessor.getCustomName(), Optional.of(this.getTextFor(player))));
+                accessor.setTrackedValues(data);
+
+                player.networkHandler.sendPacket(packet);
+            }
+
+            this.isDirty = false;
+        }
+
+        super.onTick(hologram);
     }
 }

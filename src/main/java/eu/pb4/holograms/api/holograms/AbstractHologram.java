@@ -4,10 +4,10 @@ import com.google.common.collect.Lists;
 import eu.pb4.holograms.api.InteractionType;
 import eu.pb4.holograms.api.elements.EmptyHologramElement;
 import eu.pb4.holograms.api.elements.HologramElement;
-import eu.pb4.holograms.api.elements.TextHologramElement;
+import eu.pb4.holograms.api.elements.item.AbstractItemHologramElement;
+import eu.pb4.holograms.api.elements.text.AbstractTextHologramElement;
+import eu.pb4.holograms.api.elements.text.StaticTextHologramElement;
 import eu.pb4.holograms.api.elements.clickable.EntityHologramElement;
-import eu.pb4.holograms.api.elements.item.SpinningItemHologramElement;
-import eu.pb4.holograms.api.elements.item.StaticItemHologramElement;
 import eu.pb4.holograms.interfaces.HologramHolder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -35,13 +35,26 @@ public abstract class AbstractHologram {
     protected Vec3d position;
     protected Set<ServerPlayerEntity> players = new HashSet<>();
     protected Object2IntMap<ServerPlayerEntity> playerLastInteraction = new Object2IntArrayMap<>();
+    protected VerticalAlign alignment;
 
     protected IntList entityIds = new IntArrayList();
     protected boolean isActive = false;
 
-    public AbstractHologram(ServerWorld world, Vec3d position) {
+    public AbstractHologram(ServerWorld world, Vec3d position, VerticalAlign alignment) {
         this.world = world;
         this.position = new Vec3d(position.x, position.y, position.z);
+        this.alignment = alignment;
+    }
+
+    public VerticalAlign getAlignment() {
+        return this.alignment;
+    }
+
+    public void setAlignment(VerticalAlign alignment) {
+        this.alignment = alignment;
+        if (this.isActive) {
+            this.sendPositionUpdate();
+        }
     }
 
     protected void updatePosition(Vec3d position) {
@@ -64,27 +77,46 @@ public abstract class AbstractHologram {
     }
 
     public int addText(Text text) {
-        return this.addElement(new TextHologramElement(text));
+        return this.addElement(new StaticTextHologramElement(text));
     }
 
     public int addText(int pos, Text text) {
-        return this.addElement(pos, new TextHologramElement(text));
+        return this.addElement(pos, new StaticTextHologramElement(text));
     }
 
     public int setText(int pos, Text text) {
-        return this.setElement(pos, new TextHologramElement(text));
+        HologramElement hologramElement = this.getElement(pos);
+
+        if (hologramElement instanceof AbstractTextHologramElement) {
+            ((AbstractTextHologramElement) hologramElement).setText(text);
+            return pos;
+        } else {
+            return this.setElement(pos, new StaticTextHologramElement(text));
+        }
+    }
+
+    public int addText(Text text, boolean isStatic) {
+        return this.addElement(AbstractTextHologramElement.create(text, isStatic));
+    }
+
+    public int addText(int pos, Text text, boolean isStatic) {
+        return this.addElement(pos, AbstractTextHologramElement.create(text, isStatic));
+    }
+
+    public int setText(int pos, Text text, boolean isStatic) {
+        return this.setElement(pos, AbstractTextHologramElement.create(text, isStatic));
     }
 
     public int addItemStack(ItemStack stack, boolean isStatic) {
-        return this.addElement(isStatic ? new StaticItemHologramElement(stack) : new SpinningItemHologramElement(stack));
+        return this.addElement(AbstractItemHologramElement.create(stack, isStatic));
     }
 
     public int addItemStack(int pos, ItemStack stack, boolean isStatic) {
-        return this.addElement(pos, isStatic ? new StaticItemHologramElement(stack) : new SpinningItemHologramElement(stack));
+        return this.addElement(pos, AbstractItemHologramElement.create(stack, isStatic));
     }
 
     public int setItemStack(int pos, ItemStack stack, boolean isStatic) {
-        return this.setElement(pos, isStatic ? new StaticItemHologramElement(stack) : new SpinningItemHologramElement(stack));
+        return this.setElement(pos, AbstractItemHologramElement.create(stack, isStatic));
     }
 
     public int addEntity(Entity entity) {
@@ -185,16 +217,50 @@ public abstract class AbstractHologram {
 
     @Nullable
     public Vec3d getElementPosition(HologramElement element) {
-        double height = 0;
-        for (HologramElement other : Lists.reverse(elements)) {
-            if (other == element) {
-                return new Vec3d(this.position.x, this.position.y + height, this.position.z);
+        if (this.alignment == VerticalAlign.TOP) {
+            double height = 0;
+
+            for (HologramElement other : Lists.reverse(elements)) {
+                if (other == element) {
+                    return new Vec3d(this.position.x, this.position.y + height, this.position.z);
+                }
+                height += other.getHeight();
             }
-            height += other.getHeight();
+        }
+        if (this.alignment == VerticalAlign.BOTTOM) {
+            double height = 0;
+
+            for (HologramElement other : this.elements) {
+                if (other == element) {
+                    return new Vec3d(this.position.x, this.position.y - height, this.position.z);
+                }
+                height += other.getHeight();
+            }
+        } else if (this.alignment == VerticalAlign.CENTER) {
+            double fullHeight = 0;
+            for (HologramElement other : this.elements) {
+                fullHeight += other.getHeight();
+            }
+
+            fullHeight = fullHeight / 2;
+
+            double height = 0;
+
+            for (HologramElement other : Lists.reverse(elements)) {
+                if (other == element) {
+                    return new Vec3d(this.position.x, this.position.y + height - fullHeight, this.position.z);
+                }
+                height += other.getHeight();
+            }
         }
 
         return null;
     }
+
+    public List<HologramElement> getElements() {
+        return Collections.unmodifiableList(this.elements);
+    }
+
 
     public void tick() {
         if (isActive && this.players.size() > 0) {
@@ -303,5 +369,11 @@ public abstract class AbstractHologram {
                 return;
             }
         }
+    }
+
+    public enum VerticalAlign {
+        TOP,
+        CENTER,
+        BOTTOM
     }
 }

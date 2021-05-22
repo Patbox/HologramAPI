@@ -11,6 +11,7 @@
     "ThreadedAnvilChunkStorageMixin",
     "WorldChunkMixin",
     "accessors.AreaEffectCloudEntityAccessor",
+    "accessors.ArmorStandEntityAccessor",
     "accessors.EntityAccessor",
     "accessors.EntityPassengersSetS2CPacketAccessor",
     "accessors.EntityPositionS2CPacketAccessor",

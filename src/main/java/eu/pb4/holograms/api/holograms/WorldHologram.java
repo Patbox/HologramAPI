@@ -11,7 +11,13 @@ public class WorldHologram extends AbstractHologram {
     protected ChunkPos chunkPos;
 
     public WorldHologram(ServerWorld world, Vec3d position) {
-        super(world, position);
+        super(world, position, VerticalAlign.TOP);
+        this.chunk = world.getChunk(((int) position.x) >> 4, ((int) position.z) >> 4);
+        this.chunkPos = this.chunk.getPos();
+    }
+
+    public WorldHologram(ServerWorld world, Vec3d position, VerticalAlign alignment) {
+        super(world, position, alignment);
         this.chunk = world.getChunk(((int) position.x) >> 4, ((int) position.z) >> 4);
         this.chunkPos = this.chunk.getPos();
     }

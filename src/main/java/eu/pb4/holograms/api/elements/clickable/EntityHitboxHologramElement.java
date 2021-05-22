@@ -15,15 +15,15 @@ import net.minecraft.util.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CubeHitboxHologramElement extends AbstractHologramElement {
+public class EntityHitboxHologramElement extends AbstractHologramElement {
     protected final int entityId;
-    protected final int size;
+    protected final EntityType<?> entityType;
 
-    public CubeHitboxHologramElement(int size, Vec3d offset) {
+    public EntityHitboxHologramElement(EntityType<?> entityType, Vec3d offset) {
         this.height = 0;
         this.entityId = EntityAccessor.getMaxEntityId().incrementAndGet();
         this.entityIds.add(entityId);
-        this.size = size;
+        this.entityType = entityType;
         this.offset = offset;
     }
 
@@ -41,7 +41,7 @@ public class CubeHitboxHologramElement extends AbstractHologramElement {
             accessor.setX(pos.x);
             accessor.setY(pos.y);
             accessor.setZ(pos.z);
-            accessor.setEntityType(Registry.ENTITY_TYPE.getRawId(EntityType.SLIME));
+            accessor.setEntityType(Registry.ENTITY_TYPE.getRawId(this.entityType));
             accessor.setUUID(AbstractHologram.HOLOGRAM_ENTITY_UUID);
 
             player.networkHandler.sendPacket(packet);
@@ -53,7 +53,6 @@ public class CubeHitboxHologramElement extends AbstractHologramElement {
             accessor.setId(this.entityId);
             List<DataTracker.Entry<?>> data = new ArrayList<>();
             data.add(new DataTracker.Entry<>(EntityAccessor.getNoGravity(), true));
-            data.add(new DataTracker.Entry<>(SlimeEntityAccessor.getSlimeSize(), this.size));
             data.add(new DataTracker.Entry<>(EntityAccessor.getFlags(), (byte) 0x20));
 
             accessor.setTrackedValues(data);

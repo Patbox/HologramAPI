@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 
 public abstract class AbstractItemHologramElement extends AbstractHologramElement {
     protected ItemStack itemStack;
+    protected boolean isDirty = false;
 
     protected AbstractItemHologramElement(ItemStack stack) {
         super();
@@ -17,5 +18,10 @@ public abstract class AbstractItemHologramElement extends AbstractHologramElemen
 
     public void setItemStack(ItemStack stack) {
         this.itemStack = stack;
+        this.isDirty = true;
+    }
+
+    public static AbstractItemHologramElement create(ItemStack stack, boolean isStatic) {
+        return isStatic ? new StaticItemHologramElement(stack) : new SpinningItemHologramElement(stack);
     }
 }

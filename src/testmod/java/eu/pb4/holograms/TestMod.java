@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class TestMod implements ModInitializer {
-    static WorldHologram HOLOGRAM = null;
     static int pos = -1;
 
     private static int test(CommandContext<ServerCommandSource> objectCommandContext) {
@@ -40,7 +39,7 @@ public class TestMod implements ModInitializer {
             hologram.addItemStack(Items.POTATO.getDefaultStack(), false);
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
             hologram.addText(new LiteralText("« »"));
-            hologram.addElement(new CubeHitboxHologramElement(3, new Vec3d(0, 0.2, 0)) {
+            hologram.addElement(new CubeHitboxHologramElement(2, new Vec3d(0, -0.2, 0)) {
                 @Override
                 public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
                     super.onClick(hologram, player, type, hand, vec, entityId);
@@ -50,9 +49,6 @@ public class TestMod implements ModInitializer {
             hologram.addText(new LiteralText("434234254234562653247y4575678rt").formatted(Formatting.AQUA));
 
             hologram.build();
-
-            HOLOGRAM = hologram;
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,7 +78,36 @@ public class TestMod implements ModInitializer {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
 
-            HOLOGRAM.setPosition(player.getPos());
+            WorldHologram hologram = new WorldHologram(player.getServerWorld(), player.getPos());
+
+            hologram.addText(new LiteralText("hello"));
+            hologram.addElement(new CubeHitboxHologramElement(1, new Vec3d(0, 0, 0)) {
+                @Override
+                public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
+                    super.onClick(hologram, player, type, hand, vec, entityId);
+                    hologram.setAlignment(AbstractHologram.VerticalAlign.TOP);
+                }
+            });
+            hologram.addText(new LiteralText("test"));
+            hologram.addItemStack(Items.POTATO.getDefaultStack(), false);
+            hologram.addElement(new CubeHitboxHologramElement(1, new Vec3d(0, 0, 0)) {
+                @Override
+                public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
+                    super.onClick(hologram, player, type, hand, vec, entityId);
+                    hologram.setAlignment(AbstractHologram.VerticalAlign.CENTER);
+                }
+            });
+            hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
+            hologram.addText(new LiteralText("« »"));
+            hologram.addElement(new CubeHitboxHologramElement(1, new Vec3d(0, -0.2, 0)) {
+                @Override
+                public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
+                    super.onClick(hologram, player, type, hand, vec, entityId);
+                    hologram.setAlignment(AbstractHologram.VerticalAlign.BOTTOM);
+                }
+            });
+
+            hologram.build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,7 +150,12 @@ public class TestMod implements ModInitializer {
             EntityHologram hologram = new EntityHologram(pig, new Vec3d(2, 2, 2));
 
             hologram.addText(new LiteralText("Hello There"));
+            hologram.addText(new LiteralText("(Static)"));
+            hologram.addText(new LiteralText("Hello!"), false);
+            hologram.addText(new LiteralText("(Non Static)"), false);
+
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
+            hologram.addItemStack(Items.IRON_AXE.getDefaultStack(), false);
 
             hologram.build();
             System.out.println(hologram.getEntityIds());
