@@ -45,15 +45,15 @@ public class EntityHologram extends AbstractHologram {
     }
 
     @Override
-    public void build() {
+    public void show() {
         ((EntityHologramHolder) this.entity).addEntityHologram(this);
-        super.build();
+        super.show();
     }
 
     @Override
-    public void remove() {
+    public void hide() {
         ((EntityHologramHolder) this.entity).removeEntityHologram(this);
-        super.remove();
+        super.hide();
     }
 
     public void syncPositionWithEntity() {

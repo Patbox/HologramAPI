@@ -134,12 +134,12 @@ public abstract class AbstractHologram {
     public int addElement(HologramElement element) {
         this.elements.add(element);
         this.entityIds.addAll(element.getEntityIds());
-        if (isActive) {
+        if (this.isActive) {
             for (ServerPlayerEntity player : this.players) {
                 element.createPackets(player, this);
             }
+            this.sendPositionUpdate();
         }
-        this.sendPositionUpdate();
 
         return this.elements.indexOf(element);
     }
@@ -151,8 +151,8 @@ public abstract class AbstractHologram {
             for (ServerPlayerEntity player : this.players) {
                 element.createPackets(player, this);
             }
+            this.sendPositionUpdate();
         }
-        this.sendPositionUpdate();
 
         return this.elements.indexOf(element);
     }
@@ -167,12 +167,19 @@ public abstract class AbstractHologram {
                     this.elements.add(new EmptyHologramElement());
                 }
                 this.elements.add(element);
+                if (this.isActive) {
+                    for (ServerPlayerEntity player : this.players) {
+                        element.createPackets(player, this);
+                    }
+                    this.sendPositionUpdate();
+                }
+                return pos;
             } else {
                 int[] ids = this.elements.get(pos).getEntityIds().toIntArray();
                 this.entityIds.removeAll(this.elements.get(pos).getEntityIds());
                 this.elements.set(pos, element);
 
-                if (isActive) {
+                if (this.isActive) {
                     if (ids.length > 0) {
                         Packet packet = new EntitiesDestroyS2CPacket(ids);
                         for (ServerPlayerEntity player : this.players) {
@@ -270,7 +277,7 @@ public abstract class AbstractHologram {
         }
     }
 
-    public void build() {
+    public void show() {
         if (!isActive) {
             this.isActive = true;
             for (ServerPlayerEntity player : this.players) {
@@ -284,7 +291,7 @@ public abstract class AbstractHologram {
         }
     }
 
-    public void remove() {
+    public void hide() {
         if (isActive) {
             this.isActive = false;
             Packet packet = this.getDestroyPacket();

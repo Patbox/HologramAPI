@@ -26,6 +26,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class TestMod implements ModInitializer {
     static int pos = -1;
+    static int pos2 = 1;
 
     private static int test(CommandContext<ServerCommandSource> objectCommandContext) {
         try {
@@ -48,7 +49,7 @@ public class TestMod implements ModInitializer {
             });
             hologram.addText(new LiteralText("434234254234562653247y4575678rt").formatted(Formatting.AQUA));
 
-            hologram.build();
+            hologram.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,7 +108,7 @@ public class TestMod implements ModInitializer {
                 }
             });
 
-            hologram.build();
+            hologram.show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,9 +126,18 @@ public class TestMod implements ModInitializer {
             System.out.println(pig);
             EntityHologram hologram = new EntityHologram(pig, new Vec3d(2, 2, 2));
 
+            hologram.addElement(new CubeHitboxHologramElement(1, new Vec3d(0, -0.2, 0)) {
+                @Override
+                public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
+                    super.onClick(hologram, player, type, hand, vec, entityId);
+                    hologram.setText(pos2++, new LiteralText("Nice-" + pig.age));
+                }
+            });
+            hologram.show();
+
             hologram.addText(new LiteralText("Hello There"));
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
-            hologram.build();
+
 
             player.world.spawnEntity(pig);
 
@@ -157,7 +167,7 @@ public class TestMod implements ModInitializer {
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
             hologram.addItemStack(Items.IRON_AXE.getDefaultStack(), false);
 
-            hologram.build();
+            hologram.show();
             System.out.println(hologram.getEntityIds());
         } catch (Exception e) {
             e.printStackTrace();

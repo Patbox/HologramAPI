@@ -43,16 +43,16 @@ public class WorldHologram extends AbstractHologram {
     }
 
     @Override
-    public void build() {
+    public void show() {
         this.world.getChunkManager().threadedAnvilChunkStorage.getPlayersWatchingChunk(this.chunkPos, false)
                 .forEach( player -> this.addPlayer(player));
         ((HologramHolder) chunk).addHologram(this);
-        super.build();
+        super.show();
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void hide() {
+        super.hide();
         ((HologramHolder) chunk).removeHologram(this);
     }
 

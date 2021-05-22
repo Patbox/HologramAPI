@@ -1,4 +1,3 @@
-# Not done yet :tiny_potato:
 # Hologram API
 It's a small, jij-able library for creating server side holograms
 

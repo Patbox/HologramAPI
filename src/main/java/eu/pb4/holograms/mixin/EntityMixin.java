@@ -42,7 +42,9 @@ public abstract class EntityMixin implements EntityHologramHolder {
             if (tracker != null) {
                 for (ServerPlayerEntity player : tracker.playersTracking) {
                     for (EntityHologram hologram : this.attachedHolograms) {
-                        hologram.addPlayer(player);
+                        if (hologram.canAddPlayer(player)) {
+                            hologram.addPlayer(player);
+                        }
                     }
                 }
 
@@ -93,7 +95,9 @@ public abstract class EntityMixin implements EntityHologramHolder {
 
         if (tracker != null) {
             for (ServerPlayerEntity player : tracker.playersTracking) {
-                hologram.addPlayer(player);
+                if (hologram.canAddPlayer(player)) {
+                    hologram.addPlayer(player);
+                }
             }
         } else {
             this.addPlayersOnFirstTick = true;
