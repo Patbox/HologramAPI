@@ -25,7 +25,10 @@ public class EmptyHologramElement implements HologramElement {
     }
 
     @Override
-    public void createPackets(ServerPlayerEntity player, AbstractHologram hologram) {}
+    public void createSpawnPackets(ServerPlayerEntity player, AbstractHologram hologram) {}
+
+    @Override
+    public void createRemovePackets(ServerPlayerEntity player, AbstractHologram hologram) {}
 
     @Override
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {}

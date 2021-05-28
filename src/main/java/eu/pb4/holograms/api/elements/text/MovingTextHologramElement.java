@@ -2,6 +2,8 @@ package eu.pb4.holograms.api.elements.text;
 
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.*;
+import eu.pb4.holograms.utils.HologramHelper;
+import eu.pb4.holograms.utils.PacketHelpers;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -27,13 +29,14 @@ public class MovingTextHologramElement extends AbstractTextHologramElement {
         super(text);
         this.entityId = EntityAccessor.getMaxEntityId().incrementAndGet();
         this.getEntityIds().add(this.entityId);
+        this.uuid = HologramHelper.getUUID();
     }
 
     @Override
-    public void createPackets(ServerPlayerEntity player, AbstractHologram hologram) {
+    public void createSpawnPackets(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
         {
-            MobSpawnS2CPacket packet = new MobSpawnS2CPacket();
+            MobSpawnS2CPacket packet = PacketHelpers.createMobSpawn();
             MobSpawnS2CPacketAccessor accessor = (MobSpawnS2CPacketAccessor) packet;
             accessor.setId(this.entityId);
             accessor.setPitch((byte) 0);
@@ -43,12 +46,12 @@ public class MovingTextHologramElement extends AbstractTextHologramElement {
             accessor.setY(pos.y - 0.40);
             accessor.setZ(pos.z);
             accessor.setEntityType(Registry.ENTITY_TYPE.getRawId(EntityType.ARMOR_STAND));
-            accessor.setUUID(AbstractHologram.HOLOGRAM_ENTITY_UUID);
+            accessor.setUUID(this.uuid);
 
             player.networkHandler.sendPacket(packet);
         }
         {
-            EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
+            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
             EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
             accessor.setId(this.entityId);
@@ -67,7 +70,7 @@ public class MovingTextHologramElement extends AbstractTextHologramElement {
 
     @Override
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
-        EntityPositionS2CPacket packet = new EntityPositionS2CPacket();
+        EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
         EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
         accessor.setId(this.entityId);
         Vec3d pos = hologram.getElementPosition(this).add(this.getOffset());
@@ -85,7 +88,7 @@ public class MovingTextHologramElement extends AbstractTextHologramElement {
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
             for (ServerPlayerEntity player : hologram.getPlayerSet()) {
-                EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
+                EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
                 EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
                 accessor.setId(this.entityId);

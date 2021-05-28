@@ -4,10 +4,10 @@ import com.google.common.collect.Lists;
 import eu.pb4.holograms.api.InteractionType;
 import eu.pb4.holograms.api.elements.EmptyHologramElement;
 import eu.pb4.holograms.api.elements.HologramElement;
+import eu.pb4.holograms.api.elements.clickable.EntityHologramElement;
 import eu.pb4.holograms.api.elements.item.AbstractItemHologramElement;
 import eu.pb4.holograms.api.elements.text.AbstractTextHologramElement;
 import eu.pb4.holograms.api.elements.text.StaticTextHologramElement;
-import eu.pb4.holograms.api.elements.clickable.EntityHologramElement;
 import eu.pb4.holograms.interfaces.HologramHolder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -17,7 +17,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -28,8 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public abstract class AbstractHologram {
-    public static final UUID HOLOGRAM_ENTITY_UUID = UUID.fromString("00000000-0000-9000-0000-000040706948");
-
     protected final ServerWorld world;
     protected List<HologramElement> elements = new ArrayList<>();
     protected Vec3d position;
@@ -136,7 +134,7 @@ public abstract class AbstractHologram {
         this.entityIds.addAll(element.getEntityIds());
         if (this.isActive) {
             for (ServerPlayerEntity player : this.players) {
-                element.createPackets(player, this);
+                element.createSpawnPackets(player, this);
             }
             this.sendPositionUpdate();
         }
@@ -149,7 +147,7 @@ public abstract class AbstractHologram {
         this.entityIds.addAll(element.getEntityIds());
         if (isActive) {
             for (ServerPlayerEntity player : this.players) {
-                element.createPackets(player, this);
+                element.createSpawnPackets(player, this);
             }
             this.sendPositionUpdate();
         }
@@ -169,26 +167,28 @@ public abstract class AbstractHologram {
                 this.elements.add(element);
                 if (this.isActive) {
                     for (ServerPlayerEntity player : this.players) {
-                        element.createPackets(player, this);
+                        element.createSpawnPackets(player, this);
                     }
                     this.sendPositionUpdate();
                 }
                 return pos;
             } else {
-                int[] ids = this.elements.get(pos).getEntityIds().toIntArray();
-                this.entityIds.removeAll(this.elements.get(pos).getEntityIds());
+                IntList ids = this.elements.get(pos).getEntityIds();
+                this.entityIds.removeAll(ids);
                 this.elements.set(pos, element);
 
                 if (this.isActive) {
-                    if (ids.length > 0) {
-                        Packet packet = new EntitiesDestroyS2CPacket(ids);
-                        for (ServerPlayerEntity player : this.players) {
-                            player.networkHandler.sendPacket(packet);
+                    if (this.elements.get(pos).getEntityIds().size() > 0) {
+                        for (int id : ids) {
+                            Packet packet = new EntityDestroyS2CPacket(id);
+                            for (ServerPlayerEntity player : this.players) {
+                                player.networkHandler.sendPacket(packet);
+                            }
                         }
                     }
 
                     for (ServerPlayerEntity player : this.players) {
-                        element.createPackets(player, this);
+                        element.createSpawnPackets(player, this);
                     }
 
                     this.sendPositionUpdate();
@@ -285,7 +285,7 @@ public abstract class AbstractHologram {
                     if (element.getEntityIds().size() == 0) {
                         continue;
                     }
-                    element.createPackets(player, this);
+                    element.createSpawnPackets(player, this);
                 }
             }
         }
@@ -294,11 +294,11 @@ public abstract class AbstractHologram {
     public void hide() {
         if (isActive) {
             this.isActive = false;
-            Packet packet = this.getDestroyPacket();
-
-            for (ServerPlayerEntity player : this.players) {
-                if (!player.isDisconnected()) {
-                    player.networkHandler.sendPacket(packet);
+            for (HologramElement element : this.elements) {
+                for (ServerPlayerEntity player : this.players) {
+                    if (!player.isDisconnected()) {
+                        element.createRemovePackets(player, this);
+                    }
                 }
             }
         }
@@ -306,19 +306,6 @@ public abstract class AbstractHologram {
 
     public boolean isActive() {
         return this.isActive;
-    }
-
-    protected Packet<?> getDestroyPacket() {
-        IntList list = new IntArrayList();
-
-        for (HologramElement element : this.elements) {
-            if (element.getEntityIds().size() == 0) {
-                continue;
-            }
-            list.addAll(element.getEntityIds());
-        }
-
-        return new EntitiesDestroyS2CPacket(list.toIntArray());
     }
 
     public void addPlayer(ServerPlayerEntity player) {
@@ -331,7 +318,7 @@ public abstract class AbstractHologram {
                     if (element.getEntityIds().size() == 0) {
                         continue;
                     }
-                    element.createPackets(player, this);
+                    element.createSpawnPackets(player, this);
                 }
             }
         }
@@ -344,7 +331,9 @@ public abstract class AbstractHologram {
             ((HologramHolder) player).removeHologram(this);
             if (isActive) {
                 if (!player.isDisconnected()) {
-                    player.networkHandler.sendPacket(this.getDestroyPacket());
+                    for (HologramElement element : this.elements) {
+                        element.createRemovePackets(player, this);
+                    }
                 }
             }
         }

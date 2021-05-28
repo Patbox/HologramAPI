@@ -4,6 +4,7 @@ import eu.pb4.holograms.api.InteractionType;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -32,7 +33,14 @@ public abstract class AbstractHologramElement implements HologramElement {
     }
 
     @Override
-    public abstract void createPackets(ServerPlayerEntity player, AbstractHologram hologram);
+    public abstract void createSpawnPackets(ServerPlayerEntity player, AbstractHologram hologram);
+
+    @Override
+    public void createRemovePackets(ServerPlayerEntity player, AbstractHologram hologram) {
+        for (int id : this.getEntityIds()) {
+            player.networkHandler.sendPacket(new EntityDestroyS2CPacket(id));
+        }
+    }
 
     @Override
     public void onTick(AbstractHologram hologram) {}
