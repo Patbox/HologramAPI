@@ -219,7 +219,11 @@ public abstract class AbstractHologram {
     }
 
     public void removeElement(int pos) {
-        this.elements.remove(pos);
+        HologramElement element = this.elements.remove(pos);
+        for (ServerPlayerEntity player : this.players) {
+            element.createRemovePackets(player, this);
+        }
+        this.sendPositionUpdate();
     }
 
     @Nullable
