@@ -3,7 +3,6 @@ package eu.pb4.holograms.api.elements.item;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.*;
 import eu.pb4.holograms.utils.HologramHelper;
-import eu.pb4.holograms.utils.PacketHelpers;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.item.ItemStack;
@@ -39,7 +38,7 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
 
         player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y, pos.z, 0, 0, EntityType.SNOWBALL, 0, Vec3d.ZERO));
 
-        EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
+        EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
         EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
         accessor.setId(this.entityId);
@@ -56,7 +55,7 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
 
-        EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
+        EntityPositionS2CPacket packet = new EntityPositionS2CPacket();
         EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
         accessor.setId(this.entityId);
         accessor.setX(pos.x);
@@ -71,7 +70,7 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
     @Override
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
-            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
+            EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
             EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
             accessor.setId(this.entityId);

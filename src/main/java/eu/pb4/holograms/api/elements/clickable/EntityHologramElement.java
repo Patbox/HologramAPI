@@ -6,7 +6,6 @@ import eu.pb4.holograms.mixin.accessors.EntityAccessor;
 import eu.pb4.holograms.mixin.accessors.EntityPositionS2CPacketAccessor;
 import eu.pb4.holograms.mixin.accessors.EntityTrackerUpdateS2CPacketAccessor;
 import eu.pb4.holograms.utils.HologramHelper;
-import eu.pb4.holograms.utils.PacketHelpers;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -41,7 +40,7 @@ public class EntityHologramElement extends AbstractHologramElement {
 
         player.networkHandler.sendPacket(this.entity.createSpawnPacket());
 
-        EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
+        EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
         EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
         accessor.setId(this.entity.getEntityId());
@@ -64,7 +63,7 @@ public class EntityHologramElement extends AbstractHologramElement {
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
 
-        EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
+        EntityPositionS2CPacket packet = new EntityPositionS2CPacket();
         EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
         accessor.setId(this.entity.getEntityId());
         accessor.setX(pos.x);
