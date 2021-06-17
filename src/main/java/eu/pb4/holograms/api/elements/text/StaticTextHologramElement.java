@@ -6,7 +6,6 @@ import eu.pb4.holograms.mixin.accessors.EntityAccessor;
 import eu.pb4.holograms.mixin.accessors.EntityPositionS2CPacketAccessor;
 import eu.pb4.holograms.mixin.accessors.EntityTrackerUpdateS2CPacketAccessor;
 import eu.pb4.holograms.utils.HologramHelper;
-import eu.pb4.holograms.utils.PacketHelpers;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -39,7 +38,7 @@ public class StaticTextHologramElement extends AbstractTextHologramElement {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
         player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y - 0.9, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
 
-        EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
+        EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
         EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
         accessor.setId(this.entityId);
 
@@ -54,7 +53,7 @@ public class StaticTextHologramElement extends AbstractTextHologramElement {
 
     @Override
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
-        EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
+        EntityPositionS2CPacket packet = new EntityPositionS2CPacket();
         EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
         accessor.setId(this.entityId);
         Vec3d pos = hologram.getElementPosition(this).add(this.getOffset());
@@ -72,7 +71,7 @@ public class StaticTextHologramElement extends AbstractTextHologramElement {
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
             for (ServerPlayerEntity player : hologram.getPlayerSet()) {
-                EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
+                EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
                 EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
                 accessor.setId(this.entityId);
