@@ -14,11 +14,13 @@ import net.minecraft.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 public abstract class AbstractTextHologramElement extends AbstractHologramElement {
     protected Text text;
     protected int entityId;
+    protected UUID uuid;
     protected boolean isDirty = false;
 
     public AbstractTextHologramElement() {

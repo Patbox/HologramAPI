@@ -12,7 +12,8 @@ public interface HologramElement {
     double getHeight();
     Vec3d getOffset();
     IntList getEntityIds();
-    void createPackets(ServerPlayerEntity player, AbstractHologram hologram);
+    void createSpawnPackets(ServerPlayerEntity player, AbstractHologram hologram);
+    void createRemovePackets(ServerPlayerEntity player, AbstractHologram hologram);
     void updatePosition(ServerPlayerEntity player, AbstractHologram hologram);
     void onTick(AbstractHologram hologram);
     void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId);

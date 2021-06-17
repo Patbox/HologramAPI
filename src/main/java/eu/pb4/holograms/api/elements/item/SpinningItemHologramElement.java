@@ -2,6 +2,8 @@ package eu.pb4.holograms.api.elements.item;
 
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.*;
+import eu.pb4.holograms.utils.HologramHelper;
+import eu.pb4.holograms.utils.PacketHelpers;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.item.ItemStack;
@@ -15,10 +17,13 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SpinningItemHologramElement extends AbstractItemHologramElement {
     protected int itemId;
     protected int helperId;
+    protected UUID itemUuid;
+    protected UUID helperUuid;
 
     public SpinningItemHologramElement() {
         this(ItemStack.EMPTY);
@@ -29,21 +34,24 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
         this.height = 0.45;
         this.itemId = EntityAccessor.getMaxEntityId().incrementAndGet();
         this.helperId = EntityAccessor.getMaxEntityId().incrementAndGet();
+        this.itemUuid = HologramHelper.getUUID();
+        this.helperUuid = HologramHelper.getUUID();
+
 
         this.entityIds.add(itemId);
         this.entityIds.add(helperId);
     }
 
     @Override
-    public void createPackets(ServerPlayerEntity player, AbstractHologram hologram) {
+    public void createSpawnPackets(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
         {
-            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(itemId, AbstractHologram.HOLOGRAM_ENTITY_UUID, pos.x, pos.y, pos.z, 0, 0, EntityType.ITEM, 0, Vec3d.ZERO));
+            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.itemId, this.itemUuid, pos.x, pos.y, pos.z, 0, 0, EntityType.ITEM, 0, Vec3d.ZERO));
 
-            EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
+            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
             EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
-            accessor.setId(itemId);
+            accessor.setId(this.itemId);
             List<DataTracker.Entry<?>> data = new ArrayList<>();
             data.add(new DataTracker.Entry<>(EntityAccessor.getNoGravity(), true));
             data.add(new DataTracker.Entry<>(ItemEntityAccessor.getStack(), this.itemStack));
@@ -53,12 +61,12 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
         }
 
         {
-            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(helperId, AbstractHologram.HOLOGRAM_ENTITY_UUID, pos.x, pos.y - 0.6, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
+            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.helperId, this.helperUuid, pos.x, pos.y - 0.6, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
 
-            EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
+            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
             EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
-            accessor.setId(helperId);
+            accessor.setId(this.helperId);
             List<DataTracker.Entry<?>> data = new ArrayList<>();
             data.add(new DataTracker.Entry<>(AreaEffectCloudEntityAccessor.getRadius(), 0f));
             accessor.setTrackedValues(data);
@@ -67,7 +75,7 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
         }
 
         {
-            EntityPassengersSetS2CPacket packet = new EntityPassengersSetS2CPacket();
+            EntityPassengersSetS2CPacket packet = PacketHelpers.createEntityPassengersSet();
             EntityPassengersSetS2CPacketAccessor accessor = (EntityPassengersSetS2CPacketAccessor) packet;
             accessor.setId(helperId);
             accessor.setPassengers(new int[]{itemId});
@@ -80,7 +88,7 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
 
-        EntityPositionS2CPacket packet = new EntityPositionS2CPacket();
+        EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
         EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
         accessor.setId(this.helperId);
         accessor.setX(pos.x);
@@ -95,7 +103,7 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
     @Override
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
-            EntityTrackerUpdateS2CPacket packet = new EntityTrackerUpdateS2CPacket();
+            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
             EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
             accessor.setId(this.itemId);

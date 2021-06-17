@@ -3,6 +3,7 @@ package eu.pb4.holograms.mixin;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.api.holograms.EntityHologram;
 import eu.pb4.holograms.interfaces.EntityHologramHolder;
+import eu.pb4.holograms.mixin.accessors.EntityTrackerAccessor;
 import eu.pb4.holograms.mixin.accessors.ThreadedAnvilChunkStorageAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -40,7 +41,7 @@ public abstract class EntityMixin implements EntityHologramHolder {
                     .getEntityTrackers().get(this.entityId);
 
             if (tracker != null) {
-                for (ServerPlayerEntity player : tracker.playersTracking) {
+                for (ServerPlayerEntity player : ((EntityTrackerAccessor) tracker).getTrackedPlayers()) {
                     for (EntityHologram hologram : this.attachedHolograms) {
                         if (hologram.canAddPlayer(player)) {
                             hologram.addPlayer(player);
@@ -94,7 +95,7 @@ public abstract class EntityMixin implements EntityHologramHolder {
                 .getEntityTrackers().get(this.entityId);
 
         if (tracker != null) {
-            for (ServerPlayerEntity player : tracker.playersTracking) {
+            for (ServerPlayerEntity player : ((EntityTrackerAccessor) tracker).getTrackedPlayers()) {
                 if (hologram.canAddPlayer(player)) {
                     hologram.addPlayer(player);
                 }
