@@ -16,6 +16,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,12 +67,12 @@ public class CubeHitboxHologramElement extends AbstractHologramElement {
 
             player.networkHandler.sendPacket(packet);
         }
-        player.networkHandler.sendPacket(TeamS2CPacket.changePlayerTeam(HologramHelper.getFakeTeam(), this.uuid.toString(), TeamS2CPacket.Operation.ADD));
+        player.networkHandler.sendPacket(new TeamS2CPacket(HologramHelper.getFakeTeam(), Collections.singleton(this.uuid.toString()), 3));
     }
 
     @Override
     public void createRemovePackets(ServerPlayerEntity player, AbstractHologram hologram) {
-        player.networkHandler.sendPacket(TeamS2CPacket.changePlayerTeam(HologramHelper.getFakeTeam(), this.uuid.toString(), TeamS2CPacket.Operation.REMOVE));
+        player.networkHandler.sendPacket(new TeamS2CPacket(HologramHelper.getFakeTeam(), Collections.singleton(this.uuid.toString()), 4));
         super.createRemovePackets(player, hologram);
     }
 

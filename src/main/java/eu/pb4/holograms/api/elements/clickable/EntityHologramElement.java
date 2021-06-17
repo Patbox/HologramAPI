@@ -16,6 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,10 +25,10 @@ public class EntityHologramElement extends AbstractHologramElement {
 
     public EntityHologramElement(Entity entity) {
         this.height = entity.getHeight() + 0.1;
-        this.entityIds.add(entity.getId());
+        this.entityIds.add(entity.getEntityId());
         this.entity = entity;
 
-        if (this.entity.world.getEntityById(this.entity.getId()) != null) {
+        if (this.entity.world.getEntityById(this.entity.getEntityId()) != null) {
             throw new IllegalArgumentException("Entity can't exist in world!");
         }
         this.entity.setUuid(HologramHelper.getUUID());
@@ -43,19 +44,19 @@ public class EntityHologramElement extends AbstractHologramElement {
         EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
         EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
-        accessor.setId(this.entity.getId());
+        accessor.setId(this.entity.getEntityId());
         List<DataTracker.Entry<?>> data = new ArrayList<>();
         data.addAll(this.entity.getDataTracker().getAllEntries());
         data.add(new DataTracker.Entry<>(EntityAccessor.getNoGravity(), true));
         accessor.setTrackedValues(data);
 
         player.networkHandler.sendPacket(packet);
-        player.networkHandler.sendPacket(TeamS2CPacket.changePlayerTeam(HologramHelper.getFakeTeam(), this.entity.getUuidAsString(), TeamS2CPacket.Operation.ADD));
+        player.networkHandler.sendPacket(new TeamS2CPacket(HologramHelper.getFakeTeam(), Collections.singleton(this.entity.getUuidAsString()), 3));
     }
 
     @Override
     public void createRemovePackets(ServerPlayerEntity player, AbstractHologram hologram) {
-        player.networkHandler.sendPacket(TeamS2CPacket.changePlayerTeam(HologramHelper.getFakeTeam(), this.entity.getUuidAsString(), TeamS2CPacket.Operation.REMOVE));
+        player.networkHandler.sendPacket(new TeamS2CPacket(HologramHelper.getFakeTeam(), Collections.singleton(this.entity.getUuidAsString()), 4));
         super.createRemovePackets(player, hologram);
     }
 
@@ -65,7 +66,7 @@ public class EntityHologramElement extends AbstractHologramElement {
 
         EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
         EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
-        accessor.setId(this.entity.getId());
+        accessor.setId(this.entity.getEntityId());
         accessor.setX(pos.x);
         accessor.setY(pos.y - 0.05);
         accessor.setZ(pos.z);

@@ -17,7 +17,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -180,7 +181,7 @@ public abstract class AbstractHologram {
                 if (this.isActive) {
                     if (this.elements.get(pos).getEntityIds().size() > 0) {
                         for (int id : ids) {
-                            Packet packet = new EntityDestroyS2CPacket(id);
+                            Packet<ClientPlayPacketListener> packet = new EntitiesDestroyS2CPacket(id);
                             for (ServerPlayerEntity player : this.players) {
                                 player.networkHandler.sendPacket(packet);
                             }

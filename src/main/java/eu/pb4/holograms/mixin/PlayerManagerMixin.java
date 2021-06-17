@@ -20,6 +20,6 @@ public class PlayerManagerMixin {
 
     @Inject(method = "onPlayerConnect", at = @At("TAIL"))
     private void sendFakeTeam(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
-        player.networkHandler.sendPacket(TeamS2CPacket.updateTeam(HologramHelper.getFakeTeam(), true));
+        player.networkHandler.sendPacket(new TeamS2CPacket(HologramHelper.getFakeTeam(), 0));
     }
 }

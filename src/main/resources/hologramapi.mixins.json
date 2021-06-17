@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "eu.pb4.holograms.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_11",
   "mixins": [
     "EntityMixin",
     "PlayerManagerMixin",
@@ -15,6 +15,7 @@
     "accessors.EntityAccessor",
     "accessors.EntityPassengersSetS2CPacketAccessor",
     "accessors.EntityPositionS2CPacketAccessor",
+    "accessors.EntityTrackerAccessor",
     "accessors.EntityTrackerUpdateS2CPacketAccessor",
     "accessors.ItemEntityAccessor",
     "accessors.LivingEntityAccessor",

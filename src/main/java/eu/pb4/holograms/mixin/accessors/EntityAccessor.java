@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Mixin(Entity.class)
 public interface EntityAccessor {
-    @Accessor("ENTITY_ID_COUNTER")
+    @Accessor("MAX_ENTITY_ID")
     static AtomicInteger getMaxEntityId() {
         throw new AssertionError();
     }
