@@ -3,8 +3,11 @@ package eu.pb4.holograms.mixin;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.api.holograms.WorldHologram;
 import eu.pb4.holograms.interfaces.HologramHolder;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,6 +16,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,8 +36,22 @@ public class ServerPlayerEntityMixin implements HologramHolder {
         }
     }
 
-    @Inject(method = "onDisconnect", at = @At("TAIL"))
+    @Inject(method = "onDisconnect", at = @At("HEAD"))
     private void removeFromHologramsOnDisconnect(CallbackInfo ci) {
+        for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
+            hologram.removePlayer(this.asPlayer());
+        }
+    }
+
+    @Inject(method = "onDeath", at = @At("HEAD"))
+    private void removeOnDeath(DamageSource source, CallbackInfo ci) {
+        for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
+            hologram.removePlayer(this.asPlayer());
+        }
+    }
+
+    @Inject(method = "moveToWorld", at = @At("HEAD"))
+    private void removeOnWorldChange(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
         for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
             hologram.removePlayer(this.asPlayer());
         }

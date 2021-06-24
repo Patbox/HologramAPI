@@ -24,10 +24,9 @@ import java.util.Set;
 public abstract class EntityMixin implements EntityHologramHolder {
     @Shadow public World world;
 
-    @Shadow private int entityId;
-
     @Shadow public abstract String toString();
 
+    @Shadow private int id;
     @Unique
     private final Set<EntityHologram> attachedHolograms = new HashSet<>();
 
@@ -38,7 +37,7 @@ public abstract class EntityMixin implements EntityHologramHolder {
     private void tickHolograms(CallbackInfo ci) {
         if (this.addPlayersOnFirstTick) {
             ThreadedAnvilChunkStorage.EntityTracker tracker = ((ThreadedAnvilChunkStorageAccessor) ((ServerWorld) this.world).getChunkManager().threadedAnvilChunkStorage)
-                    .getEntityTrackers().get(this.entityId);
+                    .getEntityTrackers().get(this.id);
 
             if (tracker != null) {
                 for (EntityTrackingListener listener : tracker.listeners) {
@@ -92,7 +91,7 @@ public abstract class EntityMixin implements EntityHologramHolder {
         this.attachedHolograms.add(hologram);
 
         ThreadedAnvilChunkStorage.EntityTracker tracker = ((ThreadedAnvilChunkStorageAccessor) ((ServerWorld) this.world).getChunkManager().threadedAnvilChunkStorage)
-                .getEntityTrackers().get(this.entityId);
+                .getEntityTrackers().get(this.id);
 
         if (tracker != null) {
             for (EntityTrackingListener listener : tracker.listeners) {

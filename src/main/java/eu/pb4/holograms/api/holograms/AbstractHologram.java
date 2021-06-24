@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+@SuppressWarnings({"unused"})
 public abstract class AbstractHologram {
     protected final ServerWorld world;
     protected List<HologramElement> elements = new ArrayList<>();
@@ -272,6 +273,11 @@ public abstract class AbstractHologram {
         return Collections.unmodifiableList(this.elements);
     }
 
+    public void clearElements() {
+        while (this.elements.size() != 0) {
+            this.removeElement(0);
+        }
+    }
 
     public void tick() {
         if (isActive && this.players.size() > 0) {
