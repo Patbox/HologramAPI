@@ -7,7 +7,7 @@ import net.minecraft.scoreboard.Team;
 import java.util.UUID;
 
 public class HologramHelper {
-    private static long UP = 8104;
+    private static long UP = 834995665469899l;
     private static long DOWN = 0;
     private static Team FAKE_TEAM;
 
