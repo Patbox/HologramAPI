@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Mixin(ServerPlayerEntity.class)
-public class ServerPlayerEntityMixin implements HologramHolder {
+public class ServerPlayerEntityMixin implements HologramHolder<AbstractHologram> {
     @Shadow @Final public MinecraftServer server;
     @Unique
     Set<AbstractHologram> holograms = new HashSet<>();
@@ -52,6 +52,13 @@ public class ServerPlayerEntityMixin implements HologramHolder {
 
     @Inject(method = "moveToWorld", at = @At("HEAD"))
     private void removeOnWorldChange(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
+        for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
+            hologram.removePlayer(this.asPlayer());
+        }
+    }
+
+    @Inject(method = "teleport", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getServerWorld()Lnet/minecraft/server/world/ServerWorld;"))
+    private void removeOnWorldChange2(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
         for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
             hologram.removePlayer(this.asPlayer());
         }

@@ -1,8 +1,14 @@
 package eu.pb4.holograms.utils;
 
+import eu.pb4.holograms.api.holograms.WorldHologram;
+import eu.pb4.holograms.interfaces.HologramHolder;
+import eu.pb4.holograms.interfaces.WorldHologramHolder;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkStatus;
 
 import java.util.UUID;
 
@@ -25,6 +31,28 @@ public class HologramHelper {
         }
 
         return FAKE_TEAM;
+    }
+
+
+    public static boolean attachToChunk(WorldHologram hologram, ChunkPos pos) {
+        ((WorldHologramHolder) hologram.getWorld()).addHologram(hologram, pos);
+        Chunk chunk = hologram.getWorld().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
+        if (chunk instanceof HologramHolder holder) {
+            holder.addHologram(hologram);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean detachFromChunk(WorldHologram hologram, ChunkPos pos) {
+        ((WorldHologramHolder) hologram.getWorld()).removeHologram(hologram, pos);
+        Chunk chunk = hologram.getWorld().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
+        if (chunk instanceof HologramHolder holder) {
+            holder.removeHologram(hologram);
+            hologram.clearPlayers();
+            return true;
+        }
+        return false;
     }
 
 }

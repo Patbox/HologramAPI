@@ -371,6 +371,16 @@ public abstract class AbstractHologram {
         }
     }
 
+    public ServerWorld getWorld() {
+        return this.world;
+    }
+
+    public void clearPlayers() {
+        for (ServerPlayerEntity player : new HashSet<>(this.players)) {
+            this.removePlayer(player);
+        }
+    }
+
     public enum VerticalAlign {
         TOP,
         CENTER,

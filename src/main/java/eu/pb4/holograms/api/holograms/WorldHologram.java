@@ -1,59 +1,45 @@
 package eu.pb4.holograms.api.holograms;
 
-import eu.pb4.holograms.interfaces.HologramHolder;
+import eu.pb4.holograms.utils.HologramHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.chunk.WorldChunk;
 
 public class WorldHologram extends AbstractHologram {
-    protected WorldChunk chunk;
     protected ChunkPos chunkPos;
 
     public WorldHologram(ServerWorld world, Vec3d position) {
         super(world, position, VerticalAlign.TOP);
-        this.chunk = world.getChunk(((int) position.x) >> 4, ((int) position.z) >> 4);
-        this.chunkPos = this.chunk.getPos();
+        this.chunkPos = new ChunkPos(((int) position.x) >> 4, ((int) position.z) >> 4);
     }
 
     public WorldHologram(ServerWorld world, Vec3d position, VerticalAlign alignment) {
         super(world, position, alignment);
-        this.chunk = world.getChunk(((int) position.x) >> 4, ((int) position.z) >> 4);
-        this.chunkPos = this.chunk.getPos();
+        this.chunkPos = new ChunkPos(((int) position.x) >> 4, ((int) position.z) >> 4);
     }
-
 
     public void setPosition(Vec3d vec) {
         this.updatePosition(vec);
-        WorldChunk chunk = world.getChunk(((int) position.x) >> 4, ((int) position.z) >> 4);
-
-        if (chunk != this.chunk) {
-            ((HologramHolder) this.chunk).removeHologram(this);
-            if (chunk != null) {
-                if (this.isActive) {
-                    ((HologramHolder) chunk).addHologram(this);
-                }
-                this.chunk = chunk;
-                this.chunkPos = this.chunk.getPos();
-            } else {
-                this.chunk = null;
-                this.chunkPos = null;
+        ChunkPos newChunkPos = new ChunkPos(((int) position.x) >> 4, ((int) position.z) >> 4);
+        if (!newChunkPos.equals(this.chunkPos)) {
+            if (this.isActive) {
+                HologramHelper.detachFromChunk(this, this.chunkPos);
+                HologramHelper.attachToChunk(this, newChunkPos);
             }
+            this.chunkPos = newChunkPos;
         }
     }
 
     @Override
     public void show() {
-        this.world.getChunkManager().threadedAnvilChunkStorage.getPlayersWatchingChunk(this.chunkPos, false)
-                .forEach(player -> this.addPlayer(player));
-        ((HologramHolder) chunk).addHologram(this);
+        HologramHelper.attachToChunk(this, this.chunkPos);
         super.show();
     }
 
     @Override
     public void hide() {
         super.hide();
-        ((HologramHolder) chunk).removeHologram(this);
+        HologramHelper.detachFromChunk(this, this.chunkPos);
     }
 
     public Vec3d getPosition() {
@@ -64,7 +50,5 @@ public class WorldHologram extends AbstractHologram {
         return this.chunkPos;
     }
 
-    public void onChunkUnload() {
 
-    }
 }

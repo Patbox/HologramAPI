@@ -62,16 +62,10 @@ public class EntityHologramElement extends AbstractHologramElement {
     @Override
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
+        this.entity.setPos(pos.x, pos.y - 0.05, pos.z);
 
-        EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
-        EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
-        accessor.setId(this.entity.getId());
-        accessor.setX(pos.x);
-        accessor.setY(pos.y - 0.05);
-        accessor.setZ(pos.z);
-        accessor.setOnGround(false);
-        accessor.setPitch((byte) 0);
-        accessor.setYaw((byte) 0);
-        player.networkHandler.sendPacket(packet);
+        this.createRemovePackets(player, hologram);
+        this.createSpawnPackets(player, hologram);
+
     }
 }

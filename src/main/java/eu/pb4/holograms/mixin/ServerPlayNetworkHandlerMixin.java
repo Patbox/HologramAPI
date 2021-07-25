@@ -27,7 +27,7 @@ public class ServerPlayNetworkHandlerMixin {
     private void interactWithHologram(PlayerInteractEntityC2SPacket packet, CallbackInfo ci, ServerWorld world, Entity entity) {
         if (entity == null) {
             int id = ((PlayerInteractEntityC2SPacketAccessor) packet).getEntityId();
-            for (AbstractHologram hologram : ((HologramHolder) this.player).getHologramSet()) {
+            for (AbstractHologram hologram : ((HologramHolder<AbstractHologram>) this.player).getHologramSet()) {
                 if (hologram.getEntityIds().contains(id)) {
 
                     packet.handle(HologramAPIMod.interactHelper(hologram, packet, id, this.player));
