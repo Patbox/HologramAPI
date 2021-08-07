@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
 
-    @Inject(method = "onPlayerConnect", at = @At("TAIL"))
+    @Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendScoreboard(Lnet/minecraft/scoreboard/ServerScoreboard;Lnet/minecraft/server/network/ServerPlayerEntity;)V", shift = At.Shift.AFTER))
     private void sendFakeTeam(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         player.networkHandler.sendPacket(TeamS2CPacket.updateTeam(HologramHelper.getFakeTeam(), true));
     }

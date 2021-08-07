@@ -25,7 +25,7 @@ import java.util.HashSet;
 @Mixin(ThreadedAnvilChunkStorage.class)
 public abstract class ThreadedAnvilChunkStorageMixin {
 
-    @Shadow @Final private ServerWorld world;
+    @Shadow @Final ServerWorld world;
 
     @Inject(method = "sendChunkDataPackets", at = @At("TAIL"))
     private void addToHolograms(ServerPlayerEntity player, Packet<?>[] packets, WorldChunk chunk, CallbackInfo ci) {
@@ -36,7 +36,16 @@ public abstract class ThreadedAnvilChunkStorageMixin {
         }
     }
 
-
+    @Inject(method = "handlePlayerAddedOrRemoved", at = @At("TAIL"))
+    private void clearHolograms(ServerPlayerEntity player, boolean added, CallbackInfo ci) {
+        if (!added) {
+            for (AbstractHologram hologram : new HashSet<>(((HologramHolder<AbstractHologram>) player).getHologramSet())) {
+                if (hologram instanceof WorldHologram worldHologram && worldHologram.getWorld() == this.world) {
+                    hologram.removePlayer(player);
+                }
+            }
+        }
+    }
 
     @Inject(method = "method_17227", at = @At("TAIL"))
     private void onChunkLoad(ChunkHolder chunkHolder, Chunk protoChunk, CallbackInfoReturnable<Chunk> callbackInfoReturnable) {
