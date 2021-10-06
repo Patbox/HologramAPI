@@ -57,7 +57,7 @@ public class ServerPlayerEntityMixin implements HologramHolder<AbstractHologram>
         }
     }
 
-    @Inject(method = "teleport", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getServerWorld()Lnet/minecraft/server/world/ServerWorld;"))
+    @Inject(method = "teleport", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getWorld()Lnet/minecraft/server/world/ServerWorld;"))
     private void removeOnWorldChange2(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
         for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
             hologram.removePlayer(this.asPlayer());

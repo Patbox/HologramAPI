@@ -32,7 +32,7 @@ public class TestMod implements ModInitializer {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
 
-            WorldHologram hologram = new WorldHologram(player.getServerWorld(), player.getPos());
+            WorldHologram hologram = new WorldHologram(player.getWorld(), player.getPos());
 
             hologram.addText(new LiteralText("hello"));
             hologram.addElement(new EntityHologramElement(getEntityType(false).create(player.world)));
@@ -79,7 +79,7 @@ public class TestMod implements ModInitializer {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
 
-            WorldHologram hologram = new WorldHologram(player.getServerWorld(), player.getPos());
+            WorldHologram hologram = new WorldHologram(player.getWorld(), player.getPos());
 
             hologram.addText(new LiteralText("hello"));
             hologram.addElement(new CubeHitboxHologramElement(1, new Vec3d(0, 0, 0)) {
