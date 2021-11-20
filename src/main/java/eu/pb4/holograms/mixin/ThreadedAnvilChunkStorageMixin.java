@@ -5,12 +5,14 @@ import eu.pb4.holograms.api.holograms.WorldHologram;
 import eu.pb4.holograms.interfaces.HologramHolder;
 import eu.pb4.holograms.interfaces.WorldHologramHolder;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,7 +30,7 @@ public abstract class ThreadedAnvilChunkStorageMixin {
     @Shadow @Final ServerWorld world;
 
     @Inject(method = "sendChunkDataPackets", at = @At("TAIL"))
-    private void addToHolograms(ServerPlayerEntity player, Packet<?>[] packets, WorldChunk chunk, CallbackInfo ci) {
+    private void addToHolograms(ServerPlayerEntity player, MutableObject<ChunkDataS2CPacket> cachedDataPacket, WorldChunk chunk, CallbackInfo ci) {
         for (AbstractHologram hologram : ((HologramHolder<WorldHologram>) chunk).getHologramSet()) {
             if (hologram.canAddPlayer(player)) {
                 hologram.addPlayer(player);
