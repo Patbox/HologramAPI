@@ -2,8 +2,7 @@ package eu.pb4.holograms.api.elements.item;
 
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.*;
-import eu.pb4.holograms.utils.HologramHelper;
-import eu.pb4.holograms.utils.PacketHelpers;
+import eu.pb4.holograms.impl.HologramHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.item.ItemStack;
@@ -37,9 +36,9 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
     public void createSpawnPackets(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
 
-        player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y, pos.z, 0, 0, EntityType.SNOWBALL, 0, Vec3d.ZERO));
+        player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y, pos.z, 0, 0, EntityType.SNOWBALL, 0, Vec3d.ZERO, 0));
 
-        EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
+        EntityTrackerUpdateS2CPacket packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
         EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
         accessor.setId(this.entityId);
@@ -56,8 +55,8 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
 
-        EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
-        EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
+        var packet = HologramHelper.createUnsafe(EntityPositionS2CPacket.class);
+        var accessor = (EntityPositionS2CPacketAccessor) packet;
         accessor.setId(this.entityId);
         accessor.setX(pos.x);
         accessor.setY(pos.y);
@@ -71,7 +70,7 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
     @Override
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
-            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
+            EntityTrackerUpdateS2CPacket packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
             EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
             accessor.setId(this.entityId);

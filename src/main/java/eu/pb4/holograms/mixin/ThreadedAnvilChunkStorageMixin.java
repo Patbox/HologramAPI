@@ -2,9 +2,8 @@ package eu.pb4.holograms.mixin;
 
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.api.holograms.WorldHologram;
-import eu.pb4.holograms.interfaces.HologramHolder;
-import eu.pb4.holograms.interfaces.WorldHologramHolder;
-import net.minecraft.network.Packet;
+import eu.pb4.holograms.impl.interfaces.HologramHolder;
+import eu.pb4.holograms.impl.interfaces.WorldHologramHolder;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
@@ -31,7 +30,7 @@ public abstract class ThreadedAnvilChunkStorageMixin {
 
     @Inject(method = "sendChunkDataPackets", at = @At("TAIL"))
     private void addToHolograms(ServerPlayerEntity player, MutableObject<ChunkDataS2CPacket> cachedDataPacket, WorldChunk chunk, CallbackInfo ci) {
-        for (AbstractHologram hologram : ((HologramHolder<WorldHologram>) chunk).getHologramSet()) {
+        for (AbstractHologram hologram : ((HologramHolder<WorldHologram>) chunk).holoapi_getHologramSet()) {
             if (hologram.canAddPlayer(player)) {
                 hologram.addPlayer(player);
             }
@@ -41,7 +40,7 @@ public abstract class ThreadedAnvilChunkStorageMixin {
     @Inject(method = "handlePlayerAddedOrRemoved", at = @At("TAIL"))
     private void clearHolograms(ServerPlayerEntity player, boolean added, CallbackInfo ci) {
         if (!added) {
-            for (AbstractHologram hologram : new HashSet<>(((HologramHolder<AbstractHologram>) player).getHologramSet())) {
+            for (AbstractHologram hologram : new HashSet<>(((HologramHolder<AbstractHologram>) player).holoapi_getHologramSet())) {
                 if (hologram instanceof WorldHologram worldHologram && worldHologram.getWorld() == this.world) {
                     hologram.removePlayer(player);
                 }
@@ -52,8 +51,8 @@ public abstract class ThreadedAnvilChunkStorageMixin {
     @Inject(method = "method_17227", at = @At("TAIL"))
     private void onChunkLoad(ChunkHolder chunkHolder, Chunk protoChunk, CallbackInfoReturnable<Chunk> callbackInfoReturnable) {
         WorldChunk chunk = (WorldChunk) callbackInfoReturnable.getReturnValue();
-        for (WorldHologram hologram : new HashSet<>(((WorldHologramHolder) this.world).getHologramSet(chunk.getPos()))) {
-            ((HologramHolder<WorldHologram>) chunk).addHologram(hologram);
+        for (WorldHologram hologram : new HashSet<>(((WorldHologramHolder) this.world).holoapi_getHologramSet(chunk.getPos()))) {
+            ((HologramHolder<WorldHologram>) chunk).holoapi_addHologram(hologram);
         }
     }
 }

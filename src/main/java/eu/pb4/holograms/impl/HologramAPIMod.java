@@ -1,4 +1,4 @@
-package eu.pb4.holograms;
+package eu.pb4.holograms.impl;
 
 import eu.pb4.holograms.api.InteractionType;
 import eu.pb4.holograms.api.holograms.AbstractHologram;

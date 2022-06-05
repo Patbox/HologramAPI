@@ -19,7 +19,6 @@
     "accessors.EntityTrackerUpdateS2CPacketAccessor",
     "accessors.ItemEntityAccessor",
     "accessors.LivingEntityAccessor",
-    "accessors.MobSpawnS2CPacketAccessor",
     "accessors.PlayerInteractEntityC2SPacketAccessor",
     "accessors.SlimeEntityAccessor",
     "accessors.ThreadedAnvilChunkStorageAccessor",

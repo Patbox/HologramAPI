@@ -1,6 +1,6 @@
 package eu.pb4.holograms.api.holograms;
 
-import eu.pb4.holograms.utils.HologramHelper;
+import eu.pb4.holograms.impl.HologramHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;

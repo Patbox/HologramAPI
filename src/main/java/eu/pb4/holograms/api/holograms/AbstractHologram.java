@@ -8,7 +8,7 @@ import eu.pb4.holograms.api.elements.clickable.EntityHologramElement;
 import eu.pb4.holograms.api.elements.item.AbstractItemHologramElement;
 import eu.pb4.holograms.api.elements.text.AbstractTextHologramElement;
 import eu.pb4.holograms.api.elements.text.StaticTextHologramElement;
-import eu.pb4.holograms.interfaces.HologramHolder;
+import eu.pb4.holograms.impl.interfaces.HologramHolder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -315,7 +315,7 @@ public abstract class AbstractHologram {
     public void addPlayer(ServerPlayerEntity player) {
         if (!this.players.contains(player)) {
             this.players.add(player);
-            ((HologramHolder) player).addHologram(this);
+            ((HologramHolder) player).holoapi_addHologram(this);
 
             if (isActive) {
                 for (HologramElement element : this.elements) {
@@ -332,7 +332,7 @@ public abstract class AbstractHologram {
         if (this.players.contains(player)) {
             this.players.remove(player);
             this.playerLastInteraction.removeInt(player);
-            ((HologramHolder) player).removeHologram(this);
+            ((HologramHolder) player).holoapi_removeHologram(this);
             if (isActive) {
                 if (!player.isDisconnected()) {
                     for (HologramElement element : this.elements) {

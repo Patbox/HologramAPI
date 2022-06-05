@@ -2,7 +2,7 @@ package eu.pb4.holograms.mixin;
 
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.api.holograms.EntityHologram;
-import eu.pb4.holograms.interfaces.EntityHologramHolder;
+import eu.pb4.holograms.impl.interfaces.EntityHologramHolder;
 import eu.pb4.holograms.mixin.accessors.ThreadedAnvilChunkStorageAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -58,7 +58,7 @@ public abstract class EntityMixin implements EntityHologramHolder {
                 hologram.tick();
             } catch (Exception e) {
                 e.printStackTrace();
-                this.removeEntityHologram(hologram);
+                this.holoapi_removeEntityHologram(hologram);
             }
         }
     }
@@ -87,7 +87,7 @@ public abstract class EntityMixin implements EntityHologramHolder {
     }
 
     @Override
-    public void addEntityHologram(EntityHologram hologram) {
+    public void holoapi_addEntityHologram(EntityHologram hologram) {
         this.attachedHolograms.add(hologram);
 
         ThreadedAnvilChunkStorage.EntityTracker tracker = ((ThreadedAnvilChunkStorageAccessor) ((ServerWorld) this.world).getChunkManager().threadedAnvilChunkStorage)
@@ -105,12 +105,12 @@ public abstract class EntityMixin implements EntityHologramHolder {
     }
 
     @Override
-    public void removeEntityHologram(EntityHologram hologram) {
+    public void holoapi_removeEntityHologram(EntityHologram hologram) {
         this.attachedHolograms.remove(hologram);
     }
 
     @Override
-    public Set<EntityHologram> getEntityHologramSet() {
+    public Set<EntityHologram> holoapi_getEntityHologramSet() {
         return this.attachedHolograms;
     }
 }

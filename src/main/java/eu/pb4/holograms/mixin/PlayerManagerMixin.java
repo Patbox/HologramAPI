@@ -1,6 +1,6 @@
 package eu.pb4.holograms.mixin;
 
-import eu.pb4.holograms.utils.HologramHelper;
+import eu.pb4.holograms.impl.HologramHelper;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.server.PlayerManager;

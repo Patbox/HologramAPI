@@ -1,6 +1,6 @@
 package eu.pb4.holograms.api.holograms;
 
-import eu.pb4.holograms.interfaces.EntityHologramHolder;
+import eu.pb4.holograms.impl.interfaces.EntityHologramHolder;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
@@ -37,8 +37,8 @@ public class EntityHologram extends AbstractHologram {
 
     public void setEntity(Entity entity) {
         if (this.isActive) {
-            ((EntityHologramHolder) this.entity).removeEntityHologram(this);
-            ((EntityHologramHolder) entity).addEntityHologram(this);
+            ((EntityHologramHolder) this.entity).holoapi_removeEntityHologram(this);
+            ((EntityHologramHolder) entity).holoapi_addEntityHologram(this);
         }
 
         this.entity = entity;
@@ -46,13 +46,13 @@ public class EntityHologram extends AbstractHologram {
 
     @Override
     public void show() {
-        ((EntityHologramHolder) this.entity).addEntityHologram(this);
+        ((EntityHologramHolder) this.entity).holoapi_addEntityHologram(this);
         super.show();
     }
 
     @Override
     public void hide() {
-        ((EntityHologramHolder) this.entity).removeEntityHologram(this);
+        ((EntityHologramHolder) this.entity).holoapi_removeEntityHologram(this);
         super.hide();
     }
 

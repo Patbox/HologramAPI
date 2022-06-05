@@ -2,8 +2,7 @@ package eu.pb4.holograms.api.elements.item;
 
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.*;
-import eu.pb4.holograms.utils.HologramHelper;
-import eu.pb4.holograms.utils.PacketHelpers;
+import eu.pb4.holograms.impl.HologramHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.item.ItemStack;
@@ -16,7 +15,6 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class SpinningItemHologramElement extends AbstractItemHologramElement {
@@ -46,10 +44,10 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
     public void createSpawnPackets(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
         {
-            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.itemId, this.itemUuid, pos.x, pos.y, pos.z, 0, 0, EntityType.ITEM, 0, Vec3d.ZERO));
+            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.itemId, this.itemUuid, pos.x, pos.y, pos.z, 0, 0, EntityType.ITEM, 0, Vec3d.ZERO, 0));
 
-            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
-            EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+            var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
+            var accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
             accessor.setId(this.itemId);
             List<DataTracker.Entry<?>> data = new ArrayList<>();
@@ -61,9 +59,9 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
         }
 
         {
-            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.helperId, this.helperUuid, pos.x, pos.y - 0.6, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO));
+            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.helperId, this.helperUuid, pos.x, pos.y - 0.6, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO, 0));
 
-            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
+            var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
             EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
             accessor.setId(this.helperId);
@@ -75,8 +73,8 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
         }
 
         {
-            EntityPassengersSetS2CPacket packet = PacketHelpers.createEntityPassengersSet();
-            EntityPassengersSetS2CPacketAccessor accessor = (EntityPassengersSetS2CPacketAccessor) packet;
+            var packet = HologramHelper.createUnsafe(EntityPassengersSetS2CPacket.class);
+            var accessor = (EntityPassengersSetS2CPacketAccessor) packet;
             accessor.setId(helperId);
             accessor.setPassengers(new int[]{itemId});
 
@@ -88,7 +86,7 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
 
-        EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
+        var packet = HologramHelper.createUnsafe(EntityPositionS2CPacket.class);
         EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
         accessor.setId(this.helperId);
         accessor.setX(pos.x);
@@ -103,8 +101,8 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
     @Override
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
-            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
-            EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+            var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
+            var accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
             accessor.setId(this.itemId);
             List<DataTracker.Entry<?>> data = new ArrayList<>();

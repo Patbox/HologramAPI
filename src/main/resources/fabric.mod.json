@@ -17,7 +17,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "eu.pb4.holograms.HologramAPIMod"
+      "eu.pb4.holograms.impl.HologramAPIMod"
     ]
   },
   "mixins": [

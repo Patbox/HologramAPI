@@ -2,20 +2,19 @@ package eu.pb4.holograms;
 
 import com.mojang.brigadier.context.CommandContext;
 import eu.pb4.holograms.api.InteractionType;
-import eu.pb4.holograms.api.elements.SpacingHologramElement;
 import eu.pb4.holograms.api.elements.clickable.CubeHitboxHologramElement;
 import eu.pb4.holograms.api.elements.clickable.EntityHologramElement;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.api.holograms.EntityHologram;
 import eu.pb4.holograms.api.holograms.WorldHologram;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.item.Items;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -34,12 +33,12 @@ public class TestMod implements ModInitializer {
 
             WorldHologram hologram = new WorldHologram(player.getWorld(), player.getPos());
 
-            hologram.addText(new LiteralText("hello"));
+            hologram.addText(Text.literal("hello"));
             hologram.addElement(new EntityHologramElement(getEntityType(false).create(player.world)));
-            hologram.addText(new LiteralText("test"));
+            hologram.addText(Text.literal("test"));
             hologram.addItemStack(Items.POTATO.getDefaultStack(), false);
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
-            hologram.addText(new LiteralText("« »"));
+            hologram.addText(Text.literal("« »"));
             hologram.addElement(new CubeHitboxHologramElement(2, new Vec3d(0, -0.2, 0)) {
                 @Override
                 public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
@@ -47,7 +46,7 @@ public class TestMod implements ModInitializer {
                     hologram.setElement(1, new EntityHologramElement(getEntityType(type == InteractionType.ATTACK).create(player.world)));
                 }
             });
-            hologram.addText(new LiteralText("434234254234562653247y4575678rt").formatted(Formatting.AQUA));
+            hologram.addText(Text.literal("434234254234562653247y4575678rt").formatted(Formatting.AQUA));
 
             hologram.show();
         } catch (Exception e) {
@@ -81,7 +80,7 @@ public class TestMod implements ModInitializer {
 
             WorldHologram hologram = new WorldHologram(player.getWorld(), player.getPos());
 
-            hologram.addText(new LiteralText("hello"));
+            hologram.addText(Text.literal("hello"));
             hologram.addElement(new CubeHitboxHologramElement(1, new Vec3d(0, 0, 0)) {
                 @Override
                 public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
@@ -89,7 +88,7 @@ public class TestMod implements ModInitializer {
                     hologram.setAlignment(AbstractHologram.VerticalAlign.TOP);
                 }
             });
-            hologram.addText(new LiteralText("test"));
+            hologram.addText(Text.literal("test"));
             hologram.addItemStack(Items.POTATO.getDefaultStack(), false);
             hologram.addElement(new CubeHitboxHologramElement(1, new Vec3d(0, 0, 0)) {
                 @Override
@@ -99,7 +98,7 @@ public class TestMod implements ModInitializer {
                 }
             });
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
-            hologram.addText(new LiteralText("« »"));
+            hologram.addText(Text.literal("« »"));
             hologram.addElement(new CubeHitboxHologramElement(1, new Vec3d(0, -0.2, 0)) {
                 @Override
                 public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
@@ -130,12 +129,12 @@ public class TestMod implements ModInitializer {
                 @Override
                 public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
                     super.onClick(hologram, player, type, hand, vec, entityId);
-                    hologram.setText(pos2++, new LiteralText("Nice-" + pig.age));
+                    hologram.setText(pos2++, Text.literal("Nice-" + pig.age));
                 }
             });
             hologram.show();
 
-            hologram.addText(new LiteralText("Hello There"));
+            hologram.addText(Text.literal("Hello There"));
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
 
 
@@ -159,10 +158,10 @@ public class TestMod implements ModInitializer {
 
             EntityHologram hologram = new EntityHologram(pig, new Vec3d(2, 2, 2));
 
-            hologram.addText(new LiteralText("Hello There"));
-            hologram.addText(new LiteralText("(Static)"));
-            hologram.addText(new LiteralText("Hello!"), false);
-            hologram.addText(new LiteralText("(Non Static)"), false);
+            hologram.addText(Text.literal("Hello There"));
+            hologram.addText(Text.literal("(Static)"));
+            hologram.addText(Text.literal("Hello!"), false);
+            hologram.addText(Text.literal("(Non Static)"), false);
 
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
             hologram.addItemStack(Items.IRON_AXE.getDefaultStack(), false);
@@ -176,7 +175,7 @@ public class TestMod implements ModInitializer {
     }
 
     public void onInitialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(
                     literal("test").executes(TestMod::test)
             );

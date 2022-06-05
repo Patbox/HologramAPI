@@ -1,7 +1,7 @@
 package eu.pb4.holograms.mixin;
 
 import eu.pb4.holograms.api.holograms.WorldHologram;
-import eu.pb4.holograms.interfaces.HologramHolder;
+import eu.pb4.holograms.impl.interfaces.HologramHolder;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
@@ -32,7 +32,7 @@ public abstract class WorldChunkMixin extends Chunk implements HologramHolder<Wo
     @Unique
     private final Set<WorldHologram> holograms = new HashSet<>();
 
-    public void addHologram(WorldHologram hologram) {
+    public void holoapi_addHologram(WorldHologram hologram) {
         this.holograms.add(hologram);
         ((ServerChunkManager) this.getWorld().getChunkManager()).threadedAnvilChunkStorage.getPlayersWatchingChunk(this.getPos(), false)
                 .forEach((p) -> {
@@ -42,11 +42,11 @@ public abstract class WorldChunkMixin extends Chunk implements HologramHolder<Wo
                 });
     }
 
-    public void removeHologram(WorldHologram hologram) {
+    public void holoapi_removeHologram(WorldHologram hologram) {
         this.holograms.remove(hologram);
     }
 
-    public Set<WorldHologram> getHologramSet() {
+    public Set<WorldHologram> holoapi_getHologramSet() {
         return this.holograms;
     }
 }

@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.10-SNAPSHOT'
+	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -9,10 +9,6 @@ targetCompatibility = JavaVersion.VERSION_17
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
-
-minecraft {
-	accessWidener = file("src/main/resources/hologramapi.accesswidener")
-}
 
 repositories {
 	// Add repositories to retrieve artifacts from in here.
@@ -31,6 +27,24 @@ sourceSets {
 	}
 }
 
+
+dependencies {
+	// To change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Fabric API. This is technically optional, but you probably want it anyway.
+	modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modCompileOnly "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	//modRuntime "com.github.SuperCoder7979:databreaker:0.2.6"
+
+	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
+	// You may need to force-disable transitiveness on them.
+	testmodImplementation sourceSets.main.output
+}
+
 loom {
 	runs {
 		testmodClient {
@@ -46,22 +60,8 @@ loom {
 			source sourceSets.testmod
 		}
 	}
-}
 
-dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	//modRuntime "com.github.SuperCoder7979:databreaker:0.2.6"
-
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
-	testmodImplementation sourceSets.main.output
+	accessWidenerPath = file("src/main/resources/hologramapi.accesswidener")
 }
 
 processResources {

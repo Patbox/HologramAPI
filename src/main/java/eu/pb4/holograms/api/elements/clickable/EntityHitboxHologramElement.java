@@ -3,13 +3,12 @@ package eu.pb4.holograms.api.elements.clickable;
 import eu.pb4.holograms.api.elements.AbstractHologramElement;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.*;
-import eu.pb4.holograms.utils.HologramHelper;
-import eu.pb4.holograms.utils.PacketHelpers;
+import eu.pb4.holograms.impl.HologramHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -38,23 +37,11 @@ public class EntityHitboxHologramElement extends AbstractHologramElement {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
 
         {
-            MobSpawnS2CPacket packet = PacketHelpers.createMobSpawn();
-            MobSpawnS2CPacketAccessor accessor = (MobSpawnS2CPacketAccessor) packet;
-            accessor.setId(this.entityId);
-            accessor.setPitch((byte) 0);
-            accessor.setYaw((byte) 0);
-            accessor.setHeadYaw((byte) 0);
-            accessor.setX(pos.x);
-            accessor.setY(pos.y);
-            accessor.setZ(pos.z);
-            accessor.setEntityType(Registry.ENTITY_TYPE.getRawId(this.entityType));
-            accessor.setUUID(uuid);
-
-            player.networkHandler.sendPacket(packet);
+            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y, pos.z, 0, 0, this.entityType, 0, Vec3d.ZERO, 0));
         }
         {
-            EntityTrackerUpdateS2CPacket packet = PacketHelpers.createEntityTrackerUpdate();
-            EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+            var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
+            var accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
             accessor.setId(this.entityId);
             List<DataTracker.Entry<?>> data = new ArrayList<>();
@@ -79,8 +66,8 @@ public class EntityHitboxHologramElement extends AbstractHologramElement {
     public void updatePosition(ServerPlayerEntity player, AbstractHologram hologram) {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
 
-        EntityPositionS2CPacket packet = PacketHelpers.createEntityPosition();
-        EntityPositionS2CPacketAccessor accessor = (EntityPositionS2CPacketAccessor) packet;
+        var packet = HologramHelper.createUnsafe(EntityPositionS2CPacket.class);
+        var accessor = (EntityPositionS2CPacketAccessor) packet;
         accessor.setId(this.entityId);
         accessor.setX(pos.x);
         accessor.setY(pos.y);

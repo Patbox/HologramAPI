@@ -2,7 +2,7 @@ package eu.pb4.holograms.mixin;
 
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.api.holograms.WorldHologram;
-import eu.pb4.holograms.interfaces.HologramHolder;
+import eu.pb4.holograms.impl.interfaces.HologramHolder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.MinecraftServer;
@@ -70,17 +70,17 @@ public class ServerPlayerEntityMixin implements HologramHolder<AbstractHologram>
     }
 
     @Override
-    public void addHologram(AbstractHologram hologram) {
+    public void holoapi_addHologram(AbstractHologram hologram) {
         this.holograms.add(hologram);
     }
 
     @Override
-    public void removeHologram(AbstractHologram hologram) {
+    public void holoapi_removeHologram(AbstractHologram hologram) {
         this.holograms.remove(hologram);
     }
 
     @Override
-    public Set<AbstractHologram> getHologramSet() {
+    public Set<AbstractHologram> holoapi_getHologramSet() {
         return this.holograms;
     }
 }

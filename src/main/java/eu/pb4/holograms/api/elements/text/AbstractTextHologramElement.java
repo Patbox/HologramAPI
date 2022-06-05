@@ -1,19 +1,9 @@
 package eu.pb4.holograms.api.elements.text;
 
 import eu.pb4.holograms.api.elements.AbstractHologramElement;
-import eu.pb4.holograms.api.holograms.AbstractHologram;
-import eu.pb4.holograms.mixin.accessors.ArmorStandEntityAccessor;
-import eu.pb4.holograms.mixin.accessors.EntityAccessor;
-import eu.pb4.holograms.mixin.accessors.EntityTrackerUpdateS2CPacketAccessor;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -24,7 +14,7 @@ public abstract class AbstractTextHologramElement extends AbstractHologramElemen
     protected boolean isDirty = false;
 
     public AbstractTextHologramElement() {
-        this(new LiteralText(""));
+        this(Text.empty());
     }
 
     protected AbstractTextHologramElement(Text text) {
@@ -32,12 +22,12 @@ public abstract class AbstractTextHologramElement extends AbstractHologramElemen
         this.height = 0.28;
     }
 
-    public Text getText() {
-        return this.text;
+    public static AbstractTextHologramElement create(Text text, boolean isStatic) {
+        return isStatic ? new StaticTextHologramElement(text) : new MovingTextHologramElement(text);
     }
 
-    public Text getTextFor(ServerPlayerEntity player) {
-        return this.getText();
+    public Text getText() {
+        return this.text;
     }
 
     public void setText(Text text) {
@@ -45,7 +35,7 @@ public abstract class AbstractTextHologramElement extends AbstractHologramElemen
         this.isDirty = true;
     }
 
-    public static AbstractTextHologramElement create(Text text, boolean isStatic) {
-        return isStatic ? new StaticTextHologramElement(text) : new MovingTextHologramElement(text);
+    public Text getTextFor(ServerPlayerEntity player) {
+        return this.getText();
     }
 }

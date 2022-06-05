@@ -1,8 +1,9 @@
-package eu.pb4.holograms.utils;
+package eu.pb4.holograms.impl;
 
 import eu.pb4.holograms.api.holograms.WorldHologram;
-import eu.pb4.holograms.interfaces.HologramHolder;
-import eu.pb4.holograms.interfaces.WorldHologramHolder;
+import eu.pb4.holograms.impl.interfaces.HologramHolder;
+import eu.pb4.holograms.impl.interfaces.WorldHologramHolder;
+import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
@@ -33,22 +34,31 @@ public class HologramHelper {
         return FAKE_TEAM;
     }
 
+    public static <T> T createUnsafe(Class<T> tClass) {
+        try {
+            return (T) UnsafeAccess.UNSAFE.allocateInstance(tClass);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     public static boolean attachToChunk(WorldHologram hologram, ChunkPos pos) {
-        ((WorldHologramHolder) hologram.getWorld()).addHologram(hologram, pos);
+        ((WorldHologramHolder) hologram.getWorld()).holoapi_addHologram(hologram, pos);
         Chunk chunk = hologram.getWorld().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
         if (chunk instanceof HologramHolder holder) {
-            holder.addHologram(hologram);
+            holder.holoapi_addHologram(hologram);
             return true;
         }
         return false;
     }
 
     public static boolean detachFromChunk(WorldHologram hologram, ChunkPos pos) {
-        ((WorldHologramHolder) hologram.getWorld()).removeHologram(hologram, pos);
+        ((WorldHologramHolder) hologram.getWorld()).holoapi_removeHologram(hologram, pos);
         Chunk chunk = hologram.getWorld().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
         if (chunk instanceof HologramHolder holder) {
-            holder.removeHologram(hologram);
+            holder.holoapi_removeHologram(hologram);
             hologram.clearPlayers();
             return true;
         }

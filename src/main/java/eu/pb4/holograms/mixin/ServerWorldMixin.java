@@ -1,8 +1,8 @@
 package eu.pb4.holograms.mixin;
 
 import eu.pb4.holograms.api.holograms.WorldHologram;
-import eu.pb4.holograms.interfaces.HologramHolder;
-import eu.pb4.holograms.interfaces.WorldHologramHolder;
+import eu.pb4.holograms.impl.interfaces.HologramHolder;
+import eu.pb4.holograms.impl.interfaces.WorldHologramHolder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
@@ -20,18 +20,18 @@ public abstract class ServerWorldMixin implements WorldHologramHolder {
 
     @Inject(method = "tickChunk", at = @At("TAIL"))
     private void tickHolograms(WorldChunk chunk, int randomTickSpeed, CallbackInfo ci) {
-        for (WorldHologram hologram : ((HologramHolder<WorldHologram>) chunk).getHologramSet()) {
+        for (WorldHologram hologram : ((HologramHolder<WorldHologram>) chunk).holoapi_getHologramSet()) {
             hologram.tick();
         }
     }
 
     @Override
-    public boolean addHologram(WorldHologram hologram, ChunkPos pos) {
+    public boolean holoapi_addHologram(WorldHologram hologram, ChunkPos pos) {
         return this.hologramsPerChunk.computeIfAbsent(pos, ServerWorldMixin::getSet).add(hologram);
     }
 
     @Override
-    public boolean removeHologram(WorldHologram hologram, ChunkPos pos) {
+    public boolean holoapi_removeHologram(WorldHologram hologram, ChunkPos pos) {
         Set<WorldHologram> set = this.hologramsPerChunk.get(pos);
         if (set != null) {
             boolean bool = set.remove(hologram);
@@ -44,7 +44,7 @@ public abstract class ServerWorldMixin implements WorldHologramHolder {
     }
 
     @Override
-    public Set<WorldHologram> getHologramSet(ChunkPos pos) {
+    public Set<WorldHologram> holoapi_getHologramSet(ChunkPos pos) {
         return this.hologramsPerChunk.getOrDefault(pos, Collections.emptySet());
     }
 
