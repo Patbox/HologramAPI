@@ -12,7 +12,6 @@ import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,17 +39,11 @@ public class EntityHitboxHologramElement extends AbstractHologramElement {
             player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y, pos.z, 0, 0, this.entityType, 0, Vec3d.ZERO, 0));
         }
         {
-            var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-            var accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+            List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+            data.add(DataTracker.SerializedEntry.of(EntityAccessor.getNoGravity(), true));
+            data.add(DataTracker.SerializedEntry.of(EntityAccessor.getFlags(), (byte) 0x20));
 
-            accessor.setId(this.entityId);
-            List<DataTracker.Entry<?>> data = new ArrayList<>();
-            data.add(new DataTracker.Entry<>(EntityAccessor.getNoGravity(), true));
-            data.add(new DataTracker.Entry<>(EntityAccessor.getFlags(), (byte) 0x20));
-
-            accessor.setTrackedValues(data);
-
-            player.networkHandler.sendPacket(packet);
+            player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.entityId, data));
         }
 
         player.networkHandler.sendPacket(TeamS2CPacket.changePlayerTeam(HologramHelper.getFakeTeam(), this.uuid.toString(), TeamS2CPacket.Operation.ADD));

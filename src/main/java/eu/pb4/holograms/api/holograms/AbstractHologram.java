@@ -6,7 +6,10 @@ import eu.pb4.holograms.api.elements.EmptyHologramElement;
 import eu.pb4.holograms.api.elements.HologramElement;
 import eu.pb4.holograms.api.elements.clickable.EntityHologramElement;
 import eu.pb4.holograms.api.elements.item.AbstractItemHologramElement;
+import eu.pb4.holograms.api.elements.item.SpinningItemHologramElement;
+import eu.pb4.holograms.api.elements.item.StaticItemHologramElement;
 import eu.pb4.holograms.api.elements.text.AbstractTextHologramElement;
+import eu.pb4.holograms.api.elements.text.MovingTextHologramElement;
 import eu.pb4.holograms.api.elements.text.StaticTextHologramElement;
 import eu.pb4.holograms.impl.interfaces.HologramHolder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -82,10 +85,10 @@ public abstract class AbstractHologram {
     }
 
     public int setText(int pos, Text text) {
-        HologramElement hologramElement = this.getElement(pos);
+        var hologramElement = this.getElement(pos);
 
-        if (hologramElement instanceof AbstractTextHologramElement) {
-            ((AbstractTextHologramElement) hologramElement).setText(text);
+        if (hologramElement instanceof AbstractTextHologramElement element) {
+            element.setText(text);
             return pos;
         } else {
             return this.setElement(pos, new StaticTextHologramElement(text));
@@ -101,7 +104,14 @@ public abstract class AbstractHologram {
     }
 
     public int setText(int pos, Text text, boolean isStatic) {
-        return this.setElement(pos, AbstractTextHologramElement.create(text, isStatic));
+        var hologramElement = this.getElement(pos);
+
+        if ((isStatic && hologramElement instanceof StaticTextHologramElement) || (!isStatic && hologramElement instanceof MovingTextHologramElement)) {
+            ((AbstractTextHologramElement) hologramElement).setText(text);
+            return pos;
+        } else {
+            return this.setElement(pos, AbstractTextHologramElement.create(text, isStatic));
+        }
     }
 
     public int addItemStack(ItemStack stack, boolean isStatic) {
@@ -113,7 +123,15 @@ public abstract class AbstractHologram {
     }
 
     public int setItemStack(int pos, ItemStack stack, boolean isStatic) {
-        return this.setElement(pos, AbstractItemHologramElement.create(stack, isStatic));
+        var hologramElement = this.getElement(pos);
+
+        if ((isStatic && hologramElement instanceof StaticItemHologramElement) || (!isStatic && hologramElement instanceof SpinningItemHologramElement)) {
+            ((AbstractItemHologramElement) hologramElement).setItemStack(stack);
+            return pos;
+        } else {
+            return this.setElement(pos, AbstractItemHologramElement.create(stack, isStatic));
+        }
+
     }
 
     public int addEntity(Entity entity) {
@@ -315,7 +333,7 @@ public abstract class AbstractHologram {
     public void addPlayer(ServerPlayerEntity player) {
         if (!this.players.contains(player)) {
             this.players.add(player);
-            ((HologramHolder) player).holoapi_addHologram(this);
+            ((HologramHolder) player).hologramApi$addHologram(this);
 
             if (isActive) {
                 for (HologramElement element : this.elements) {
@@ -332,7 +350,7 @@ public abstract class AbstractHologram {
         if (this.players.contains(player)) {
             this.players.remove(player);
             this.playerLastInteraction.removeInt(player);
-            ((HologramHolder) player).holoapi_removeHologram(this);
+            ((HologramHolder) player).hologramApi$removeHologram(this);
             if (isActive) {
                 if (!player.isDisconnected()) {
                     for (HologramElement element : this.elements) {

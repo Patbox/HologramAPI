@@ -39,18 +39,13 @@ public class CubeHitboxHologramElement extends AbstractHologramElement {
         player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y, pos.z, 0, 0, EntityType.SLIME, 0, Vec3d.ZERO, 0));
 
         {
-            EntityTrackerUpdateS2CPacket packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-            EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+            List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+            data.add(DataTracker.SerializedEntry.of(EntityAccessor.getNoGravity(), true));
+            data.add(DataTracker.SerializedEntry.of(SlimeEntityAccessor.getSlimeSize(), this.size));
+            data.add(DataTracker.SerializedEntry.of(EntityAccessor.getFlags(), (byte) 0x20));
 
-            accessor.setId(this.entityId);
-            List<DataTracker.Entry<?>> data = new ArrayList<>();
-            data.add(new DataTracker.Entry<>(EntityAccessor.getNoGravity(), true));
-            data.add(new DataTracker.Entry<>(SlimeEntityAccessor.getSlimeSize(), this.size));
-            data.add(new DataTracker.Entry<>(EntityAccessor.getFlags(), (byte) 0x20));
 
-            accessor.setTrackedValues(data);
-
-            player.networkHandler.sendPacket(packet);
+            player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.entityId, data));
         }
         player.networkHandler.sendPacket(TeamS2CPacket.changePlayerTeam(HologramHelper.getFakeTeam(), this.uuid.toString(), TeamS2CPacket.Operation.ADD));
     }

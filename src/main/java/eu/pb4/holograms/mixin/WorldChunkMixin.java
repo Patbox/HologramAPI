@@ -2,9 +2,9 @@ package eu.pb4.holograms.mixin;
 
 import eu.pb4.holograms.api.holograms.WorldHologram;
 import eu.pb4.holograms.impl.interfaces.HologramHolder;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -23,6 +23,8 @@ import java.util.Set;
 
 @Mixin(WorldChunk.class)
 public abstract class WorldChunkMixin extends Chunk implements HologramHolder<WorldHologram> {
+
+
     public WorldChunkMixin(ChunkPos pos, UpgradeData upgradeData, HeightLimitView heightLimitView, Registry<Biome> biome, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable BlendingData blendingData) {
         super(pos, upgradeData, heightLimitView, biome, inhabitedTime, sectionArrayInitializer, blendingData);
     }
@@ -30,10 +32,10 @@ public abstract class WorldChunkMixin extends Chunk implements HologramHolder<Wo
     @Shadow public abstract World getWorld();
 
     @Unique
-    private final Set<WorldHologram> holograms = new HashSet<>();
+    private final Set<WorldHologram> hologramApi$holograms = new HashSet<>();
 
-    public void holoapi_addHologram(WorldHologram hologram) {
-        this.holograms.add(hologram);
+    public void hologramApi$addHologram(WorldHologram hologram) {
+        this.hologramApi$holograms.add(hologram);
         ((ServerChunkManager) this.getWorld().getChunkManager()).threadedAnvilChunkStorage.getPlayersWatchingChunk(this.getPos(), false)
                 .forEach((p) -> {
                     if (hologram.canAddPlayer(p)) {
@@ -42,11 +44,11 @@ public abstract class WorldChunkMixin extends Chunk implements HologramHolder<Wo
                 });
     }
 
-    public void holoapi_removeHologram(WorldHologram hologram) {
-        this.holograms.remove(hologram);
+    public void hologramApi$removeHologram(WorldHologram hologram) {
+        this.hologramApi$holograms.remove(hologram);
     }
 
-    public Set<WorldHologram> holoapi_getHologramSet() {
-        return this.holograms;
+    public Set<WorldHologram> hologramApi$getHologramSet() {
+        return this.hologramApi$holograms;
     }
 }

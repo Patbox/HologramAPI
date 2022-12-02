@@ -5,7 +5,6 @@ import eu.pb4.holograms.impl.HologramHelper;
 import eu.pb4.holograms.mixin.accessors.ArmorStandEntityAccessor;
 import eu.pb4.holograms.mixin.accessors.EntityAccessor;
 import eu.pb4.holograms.mixin.accessors.EntityPositionS2CPacketAccessor;
-import eu.pb4.holograms.mixin.accessors.EntityTrackerUpdateS2CPacketAccessor;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -14,7 +13,6 @@ import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,20 +38,13 @@ public class MovingTextHologramElement extends AbstractTextHologramElement {
         player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y, pos.z, 0, 0, EntityType.ARMOR_STAND, 0, Vec3d.ZERO, 0));
 
         {
-            var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-            var accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
-
-            accessor.setId(this.entityId);
-            List<DataTracker.Entry<?>> data = new ArrayList<>();
-            data.add(new DataTracker.Entry<>(EntityAccessor.getNoGravity(), true));
-            data.add(new DataTracker.Entry<>(EntityAccessor.getFlags(), (byte) 0x20));
-            data.add(new DataTracker.Entry<>(EntityAccessor.getCustomName(), Optional.of(this.getTextFor(player))));
-            data.add(new DataTracker.Entry<>(EntityAccessor.getNameVisible(), true));
-            data.add(new DataTracker.Entry<>(ArmorStandEntityAccessor.getArmorStandFlags(), (byte) 0x19));
-
-            accessor.setTrackedValues(data);
-
-            player.networkHandler.sendPacket(packet);
+            List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+            data.add(DataTracker.SerializedEntry.of(EntityAccessor.getNoGravity(), true));
+            data.add(DataTracker.SerializedEntry.of(EntityAccessor.getFlags(), (byte) 0x20));
+            data.add(DataTracker.SerializedEntry.of(EntityAccessor.getCustomName(), Optional.of(this.getTextFor(player))));
+            data.add(DataTracker.SerializedEntry.of(EntityAccessor.getNameVisible(), true));
+            data.add(DataTracker.SerializedEntry.of(ArmorStandEntityAccessor.getArmorStandFlags(), (byte) 0x19));
+            player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.entityId, data));
         }
     }
 
@@ -77,15 +68,10 @@ public class MovingTextHologramElement extends AbstractTextHologramElement {
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
             for (ServerPlayerEntity player : hologram.getPlayerSet()) {
-                var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-                var accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
-                accessor.setId(this.entityId);
-                List<DataTracker.Entry<?>> data = new ArrayList<>();
-                data.add(new DataTracker.Entry<>(EntityAccessor.getCustomName(), Optional.of(this.getTextFor(player))));
-                accessor.setTrackedValues(data);
-
-                player.networkHandler.sendPacket(packet);
+                List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+                data.add(DataTracker.SerializedEntry.of(EntityAccessor.getCustomName(), Optional.of(this.getTextFor(player))));
+                player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.entityId, data));
             }
 
             this.isDirty = false;

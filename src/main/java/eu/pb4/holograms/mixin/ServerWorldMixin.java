@@ -19,19 +19,19 @@ public abstract class ServerWorldMixin implements WorldHologramHolder {
     @Unique private Map<ChunkPos, Set<WorldHologram>> hologramsPerChunk = new HashMap<>();
 
     @Inject(method = "tickChunk", at = @At("TAIL"))
-    private void tickHolograms(WorldChunk chunk, int randomTickSpeed, CallbackInfo ci) {
-        for (WorldHologram hologram : ((HologramHolder<WorldHologram>) chunk).holoapi_getHologramSet()) {
+    private void hologramApi$tickHolograms(WorldChunk chunk, int randomTickSpeed, CallbackInfo ci) {
+        for (WorldHologram hologram : ((HologramHolder<WorldHologram>) chunk).hologramApi$getHologramSet()) {
             hologram.tick();
         }
     }
 
     @Override
-    public boolean holoapi_addHologram(WorldHologram hologram, ChunkPos pos) {
-        return this.hologramsPerChunk.computeIfAbsent(pos, ServerWorldMixin::getSet).add(hologram);
+    public boolean hologramApi$addHologram(WorldHologram hologram, ChunkPos pos) {
+        return this.hologramsPerChunk.computeIfAbsent(pos, ServerWorldMixin::hologramApi$getSet).add(hologram);
     }
 
     @Override
-    public boolean holoapi_removeHologram(WorldHologram hologram, ChunkPos pos) {
+    public boolean hologramApi$removeHologram(WorldHologram hologram, ChunkPos pos) {
         Set<WorldHologram> set = this.hologramsPerChunk.get(pos);
         if (set != null) {
             boolean bool = set.remove(hologram);
@@ -44,12 +44,12 @@ public abstract class ServerWorldMixin implements WorldHologramHolder {
     }
 
     @Override
-    public Set<WorldHologram> holoapi_getHologramSet(ChunkPos pos) {
+    public Set<WorldHologram> hologramApi$getHologramSet(ChunkPos pos) {
         return this.hologramsPerChunk.getOrDefault(pos, Collections.emptySet());
     }
 
 
-    private static HashSet<WorldHologram> getSet(ChunkPos pos) {
+    private static HashSet<WorldHologram> hologramApi$getSet(ChunkPos pos) {
         return new HashSet<>();
     }
 }

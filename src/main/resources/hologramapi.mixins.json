@@ -16,7 +16,6 @@
     "accessors.EntityAccessor",
     "accessors.EntityPassengersSetS2CPacketAccessor",
     "accessors.EntityPositionS2CPacketAccessor",
-    "accessors.EntityTrackerUpdateS2CPacketAccessor",
     "accessors.ItemEntityAccessor",
     "accessors.LivingEntityAccessor",
     "accessors.PlayerInteractEntityC2SPacketAccessor",

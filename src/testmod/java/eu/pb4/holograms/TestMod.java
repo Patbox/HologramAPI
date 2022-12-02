@@ -12,13 +12,13 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.server.command.CommandManager.literal;
@@ -62,11 +62,11 @@ public class TestMod implements ModInitializer {
             pos++;
         }
 
-        EntityType type = Registry.ENTITY_TYPE.get(pos);
+        EntityType type = Registries.ENTITY_TYPE.get(pos);
 
         if (type == null) {
             pos = 0;
-            type = Registry.ENTITY_TYPE.get(pos);
+            type = Registries.ENTITY_TYPE.get(pos);
         }
 
         System.out.println(type);

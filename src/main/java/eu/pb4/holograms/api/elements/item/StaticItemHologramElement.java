@@ -38,17 +38,10 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
 
         player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y, pos.z, 0, 0, EntityType.SNOWBALL, 0, Vec3d.ZERO, 0));
 
-        EntityTrackerUpdateS2CPacket packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-        EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
-
-        accessor.setId(this.entityId);
-        List<DataTracker.Entry<?>> data = new ArrayList<>();
-        data.add(new DataTracker.Entry<>(EntityAccessor.getNoGravity(), true));
-        data.add(new DataTracker.Entry<>(ThrownItemEntityAccessor.getItem(), this.itemStack));
-        accessor.setTrackedValues(data);
-
-        player.networkHandler.sendPacket(packet);
-
+        List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+        data.add(DataTracker.SerializedEntry.of(EntityAccessor.getNoGravity(), true));
+        data.add(DataTracker.SerializedEntry.of(ThrownItemEntityAccessor.getItem(), this.itemStack));
+        player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.entityId, data));
     }
 
     @Override
@@ -70,14 +63,12 @@ public class StaticItemHologramElement extends AbstractItemHologramElement {
     @Override
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
-            EntityTrackerUpdateS2CPacket packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-            EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
 
-            accessor.setId(this.entityId);
-            List<DataTracker.Entry<?>> data = new ArrayList<>();
-            data.add(new DataTracker.Entry<>(ThrownItemEntityAccessor.getItem(), this.itemStack));
-            accessor.setTrackedValues(data);
 
+            List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+            data.add(DataTracker.SerializedEntry.of(ThrownItemEntityAccessor.getItem(), this.itemStack));
+
+            var packet = new EntityTrackerUpdateS2CPacket(this.entityId, data);
             for (ServerPlayerEntity player : hologram.getPlayerSet()) {
                 player.networkHandler.sendPacket(packet);
             }

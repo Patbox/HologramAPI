@@ -46,39 +46,30 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
         {
             player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.itemId, this.itemUuid, pos.x, pos.y, pos.z, 0, 0, EntityType.ITEM, 0, Vec3d.ZERO, 0));
 
-            var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-            var accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+            List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+            data.add(DataTracker.SerializedEntry.of(EntityAccessor.getNoGravity(), true));
+            data.add(DataTracker.SerializedEntry.of(ItemEntityAccessor.getStack(), this.itemStack));
+            player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.itemId, data));
 
-            accessor.setId(this.itemId);
-            List<DataTracker.Entry<?>> data = new ArrayList<>();
-            data.add(new DataTracker.Entry<>(EntityAccessor.getNoGravity(), true));
-            data.add(new DataTracker.Entry<>(ItemEntityAccessor.getStack(), this.itemStack));
-            accessor.setTrackedValues(data);
 
-            player.networkHandler.sendPacket(packet);
-        }
+            {
+                player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.helperId, this.helperUuid, pos.x, pos.y - 0.6, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO, 0));
 
-        {
-            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.helperId, this.helperUuid, pos.x, pos.y - 0.6, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO, 0));
+                data = new ArrayList<>();
+                data.add(DataTracker.SerializedEntry.of(AreaEffectCloudEntityAccessor.getRadius(), 0f));
 
-            var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-            EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+                player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.helperId, data));
 
-            accessor.setId(this.helperId);
-            List<DataTracker.Entry<?>> data = new ArrayList<>();
-            data.add(new DataTracker.Entry<>(AreaEffectCloudEntityAccessor.getRadius(), 0f));
-            accessor.setTrackedValues(data);
+            }
 
-            player.networkHandler.sendPacket(packet);
-        }
+            {
+                var packet = HologramHelper.createUnsafe(EntityPassengersSetS2CPacket.class);
+                var accessor = (EntityPassengersSetS2CPacketAccessor) packet;
+                accessor.setId(helperId);
+                accessor.setPassengers(new int[]{itemId});
 
-        {
-            var packet = HologramHelper.createUnsafe(EntityPassengersSetS2CPacket.class);
-            var accessor = (EntityPassengersSetS2CPacketAccessor) packet;
-            accessor.setId(helperId);
-            accessor.setPassengers(new int[]{itemId});
-
-            player.networkHandler.sendPacket(packet);
+                player.networkHandler.sendPacket(packet);
+            }
         }
     }
 
@@ -101,14 +92,10 @@ public class SpinningItemHologramElement extends AbstractItemHologramElement {
     @Override
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
-            var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-            var accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+            List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+            data.add(DataTracker.SerializedEntry.of(ItemEntityAccessor.getStack(), this.itemStack));
 
-            accessor.setId(this.itemId);
-            List<DataTracker.Entry<?>> data = new ArrayList<>();
-            data.add(new DataTracker.Entry<>(ItemEntityAccessor.getStack(), this.itemStack));
-            accessor.setTrackedValues(data);
-
+            var packet = new EntityTrackerUpdateS2CPacket(this.itemId, data);
             for (ServerPlayerEntity player : hologram.getPlayerSet()) {
                 player.networkHandler.sendPacket(packet);
             }

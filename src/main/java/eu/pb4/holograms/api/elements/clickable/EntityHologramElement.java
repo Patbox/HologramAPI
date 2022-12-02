@@ -3,7 +3,6 @@ package eu.pb4.holograms.api.elements.clickable;
 import eu.pb4.holograms.api.elements.AbstractHologramElement;
 import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.EntityAccessor;
-import eu.pb4.holograms.mixin.accessors.EntityTrackerUpdateS2CPacketAccessor;
 import eu.pb4.holograms.impl.HologramHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.DataTracker;
@@ -36,16 +35,11 @@ public class EntityHologramElement extends AbstractHologramElement {
 
         player.networkHandler.sendPacket(this.entity.createSpawnPacket());
 
-        var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-        var accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+        List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+        data.addAll(this.entity.getDataTracker().getChangedEntries());
+        data.add(DataTracker.SerializedEntry.of(EntityAccessor.getNoGravity(), true));
 
-        accessor.setId(this.entity.getId());
-        List<DataTracker.Entry<?>> data = new ArrayList<>();
-        data.addAll(this.entity.getDataTracker().getAllEntries());
-        data.add(new DataTracker.Entry<>(EntityAccessor.getNoGravity(), true));
-        accessor.setTrackedValues(data);
-
-        player.networkHandler.sendPacket(packet);
+        player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.entity.getId(), data));
         player.networkHandler.sendPacket(TeamS2CPacket.changePlayerTeam(HologramHelper.getFakeTeam(), this.entity.getUuidAsString(), TeamS2CPacket.Operation.ADD));
     }
 

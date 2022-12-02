@@ -28,7 +28,7 @@ public class ServerPlayerEntityMixin implements HologramHolder<AbstractHologram>
     Set<AbstractHologram> holograms = new HashSet<>();
 
     @Inject(method = "sendUnloadChunkPacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V"))
-    private void clearHologramFromChunk(ChunkPos chunkPos, CallbackInfo ci) {
+    private void hologramApi$clearHologramFromChunk(ChunkPos chunkPos, CallbackInfo ci) {
         for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
             if (hologram instanceof WorldHologram && ((WorldHologram) hologram).getChunkPos().equals(chunkPos)) {
                 hologram.removePlayer(this.asPlayer());
@@ -37,28 +37,28 @@ public class ServerPlayerEntityMixin implements HologramHolder<AbstractHologram>
     }
 
     @Inject(method = "onDisconnect", at = @At("HEAD"))
-    private void removeFromHologramsOnDisconnect(CallbackInfo ci) {
+    private void hologramApi$removeFromHologramsOnDisconnect(CallbackInfo ci) {
         for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
             hologram.removePlayer(this.asPlayer());
         }
     }
 
     @Inject(method = "onDeath", at = @At("HEAD"))
-    private void removeOnDeath(DamageSource source, CallbackInfo ci) {
+    private void hologramApi$removeOnDeath(DamageSource source, CallbackInfo ci) {
         for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
             hologram.removePlayer(this.asPlayer());
         }
     }
 
     @Inject(method = "moveToWorld", at = @At("HEAD"))
-    private void removeOnWorldChange(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
+    private void hologramApi$removeOnWorldChange(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
         for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
             hologram.removePlayer(this.asPlayer());
         }
     }
 
     @Inject(method = "teleport", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getWorld()Lnet/minecraft/server/world/ServerWorld;"))
-    private void removeOnWorldChange2(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
+    private void hologramApi$removeOnWorldChange2(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
         for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
             hologram.removePlayer(this.asPlayer());
         }
@@ -70,17 +70,17 @@ public class ServerPlayerEntityMixin implements HologramHolder<AbstractHologram>
     }
 
     @Override
-    public void holoapi_addHologram(AbstractHologram hologram) {
+    public void hologramApi$addHologram(AbstractHologram hologram) {
         this.holograms.add(hologram);
     }
 
     @Override
-    public void holoapi_removeHologram(AbstractHologram hologram) {
+    public void hologramApi$removeHologram(AbstractHologram hologram) {
         this.holograms.remove(hologram);
     }
 
     @Override
-    public Set<AbstractHologram> holoapi_getHologramSet() {
+    public Set<AbstractHologram> hologramApi$getHologramSet() {
         return this.holograms;
     }
 }

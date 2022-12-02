@@ -28,44 +28,44 @@ public abstract class EntityMixin implements EntityHologramHolder {
 
     @Shadow private int id;
     @Unique
-    private final Set<EntityHologram> attachedHolograms = new HashSet<>();
+    private final Set<EntityHologram> hologramApi$attachedHolograms = new HashSet<>();
 
     @Unique
-    private boolean addPlayersOnFirstTick = false;
+    private boolean hologramApi$addPlayersOnFirstTick = false;
 
     @Inject(method = "tick", at = @At("TAIL"))
-    private void tickHolograms(CallbackInfo ci) {
-        if (this.addPlayersOnFirstTick) {
+    private void hologramApi$tickHolograms(CallbackInfo ci) {
+        if (this.hologramApi$addPlayersOnFirstTick) {
             ThreadedAnvilChunkStorage.EntityTracker tracker = ((ThreadedAnvilChunkStorageAccessor) ((ServerWorld) this.world).getChunkManager().threadedAnvilChunkStorage)
                     .getEntityTrackers().get(this.id);
 
             if (tracker != null) {
                 for (EntityTrackingListener listener : tracker.listeners) {
-                    for (EntityHologram hologram : this.attachedHolograms) {
+                    for (EntityHologram hologram : this.hologramApi$attachedHolograms) {
                         if (hologram.canAddPlayer(listener.getPlayer())) {
                             hologram.addPlayer(listener.getPlayer());
                         }
                     }
                 }
 
-                this.addPlayersOnFirstTick = false;
+                this.hologramApi$addPlayersOnFirstTick = false;
 
             }
         }
 
-        for (EntityHologram hologram : this.attachedHolograms) {
+        for (EntityHologram hologram : this.hologramApi$attachedHolograms) {
             try {
                 hologram.tick();
             } catch (Exception e) {
                 e.printStackTrace();
-                this.holoapi_removeEntityHologram(hologram);
+                this.hologramApi$removeEntityHologram(hologram);
             }
         }
     }
 
     @Inject(method = "onStartedTrackingBy", at = @At("TAIL"))
-    private void addToHolograms(ServerPlayerEntity player, CallbackInfo ci) {
-        for (AbstractHologram hologram : this.attachedHolograms) {
+    private void hologramApi$addToHolograms(ServerPlayerEntity player, CallbackInfo ci) {
+        for (AbstractHologram hologram : this.hologramApi$attachedHolograms) {
             if (hologram.canAddPlayer(player)) {
                 hologram.addPlayer(player);
             }
@@ -73,22 +73,22 @@ public abstract class EntityMixin implements EntityHologramHolder {
     }
 
     @Inject(method = "onStoppedTrackingBy", at = @At("TAIL"))
-    private void removeFromHolograms(ServerPlayerEntity player, CallbackInfo ci) {
-        for (AbstractHologram hologram : this.attachedHolograms) {
+    private void hologramApi$removeFromHolograms(ServerPlayerEntity player, CallbackInfo ci) {
+        for (AbstractHologram hologram : this.hologramApi$attachedHolograms) {
             hologram.removePlayer(player);
         }
     }
 
     @Inject(method = "setPos", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;floor(D)I"))
-    private void moveHologramsWithEntity(double x, double y, double z, CallbackInfo ci) {
-        for (EntityHologram hologram : this.attachedHolograms) {
+    private void hologramApi$moveHologramsWithEntity(double x, double y, double z, CallbackInfo ci) {
+        for (EntityHologram hologram : this.hologramApi$attachedHolograms) {
             hologram.syncPositionWithEntity();
         }
     }
 
     @Override
-    public void holoapi_addEntityHologram(EntityHologram hologram) {
-        this.attachedHolograms.add(hologram);
+    public void hologramApi$addEntityHologram(EntityHologram hologram) {
+        this.hologramApi$attachedHolograms.add(hologram);
 
         ThreadedAnvilChunkStorage.EntityTracker tracker = ((ThreadedAnvilChunkStorageAccessor) ((ServerWorld) this.world).getChunkManager().threadedAnvilChunkStorage)
                 .getEntityTrackers().get(this.id);
@@ -100,17 +100,17 @@ public abstract class EntityMixin implements EntityHologramHolder {
                 }
             }
         } else {
-            this.addPlayersOnFirstTick = true;
+            this.hologramApi$addPlayersOnFirstTick = true;
         }
     }
 
     @Override
-    public void holoapi_removeEntityHologram(EntityHologram hologram) {
-        this.attachedHolograms.remove(hologram);
+    public void hologramApi$removeEntityHologram(EntityHologram hologram) {
+        this.hologramApi$attachedHolograms.remove(hologram);
     }
 
     @Override
-    public Set<EntityHologram> holoapi_getEntityHologramSet() {
-        return this.attachedHolograms;
+    public Set<EntityHologram> hologramApi$getEntityHologramSet() {
+        return this.hologramApi$attachedHolograms;
     }
 }

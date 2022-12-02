@@ -5,7 +5,7 @@ import eu.pb4.holograms.api.holograms.AbstractHologram;
 import java.util.Set;
 
 public interface HologramHolder<T extends AbstractHologram> {
-    void holoapi_addHologram(T hologram);
-    void holoapi_removeHologram(T hologram);
-    Set<T> holoapi_getHologramSet();
+    void hologramApi$addHologram(T hologram);
+    void hologramApi$removeHologram(T hologram);
+    Set<T> hologramApi$getHologramSet();
 }

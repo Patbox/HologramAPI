@@ -21,10 +21,10 @@ public class ServerPlayNetworkHandlerMixin {
     @Shadow public ServerPlayerEntity player;
 
     @Inject(method = "onPlayerInteractEntity", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void interactWithHologram(PlayerInteractEntityC2SPacket packet, CallbackInfo ci, ServerWorld world, Entity entity) {
+    private void hologramApi$interactWithHologram(PlayerInteractEntityC2SPacket packet, CallbackInfo ci, ServerWorld world, Entity entity) {
         if (entity == null) {
             int id = ((PlayerInteractEntityC2SPacketAccessor) packet).getEntityId();
-            for (AbstractHologram hologram : ((HologramHolder<AbstractHologram>) this.player).holoapi_getHologramSet()) {
+            for (AbstractHologram hologram : ((HologramHolder<AbstractHologram>) this.player).hologramApi$getHologramSet()) {
                 if (hologram.getEntityIds().contains(id)) {
 
                     packet.handle(HologramAPIMod.interactHelper(hologram, packet, id, this.player));

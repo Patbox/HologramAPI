@@ -4,7 +4,6 @@ import eu.pb4.holograms.api.holograms.AbstractHologram;
 import eu.pb4.holograms.mixin.accessors.AreaEffectCloudEntityAccessor;
 import eu.pb4.holograms.mixin.accessors.EntityAccessor;
 import eu.pb4.holograms.mixin.accessors.EntityPositionS2CPacketAccessor;
-import eu.pb4.holograms.mixin.accessors.EntityTrackerUpdateS2CPacketAccessor;
 import eu.pb4.holograms.impl.HologramHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -37,17 +36,12 @@ public class StaticTextHologramElement extends AbstractTextHologramElement {
         Vec3d pos = hologram.getElementPosition(this).add(this.offset);
         player.networkHandler.sendPacket(new EntitySpawnS2CPacket(this.entityId, this.uuid, pos.x, pos.y - 0.9, pos.z, 0, 0, EntityType.AREA_EFFECT_CLOUD, 0, Vec3d.ZERO, 0));
 
-        var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-        EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
-        accessor.setId(this.entityId);
+        List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+        data.add(DataTracker.SerializedEntry.of(AreaEffectCloudEntityAccessor.getRadius(), 0f));
+        data.add(DataTracker.SerializedEntry.of(EntityAccessor.getCustomName(), Optional.of(this.getTextFor(player))));
+        data.add(DataTracker.SerializedEntry.of(EntityAccessor.getNameVisible(), true));
 
-        List<DataTracker.Entry<?>> data = new ArrayList<>();
-        data.add(new DataTracker.Entry<>(AreaEffectCloudEntityAccessor.getRadius(), 0f));
-        data.add(new DataTracker.Entry<>(EntityAccessor.getCustomName(), Optional.of(this.getTextFor(player))));
-        data.add(new DataTracker.Entry<>(EntityAccessor.getNameVisible(), true));
-        accessor.setTrackedValues(data);
-
-        player.networkHandler.sendPacket(packet);
+        player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.entityId, data));
     }
 
     @Override
@@ -70,15 +64,10 @@ public class StaticTextHologramElement extends AbstractTextHologramElement {
     public void onTick(AbstractHologram hologram) {
         if (this.isDirty) {
             for (ServerPlayerEntity player : hologram.getPlayerSet()) {
-                var packet = HologramHelper.createUnsafe(EntityTrackerUpdateS2CPacket.class);
-                EntityTrackerUpdateS2CPacketAccessor accessor = (EntityTrackerUpdateS2CPacketAccessor) packet;
+                List<DataTracker.SerializedEntry<?>> data = new ArrayList<>();
+                data.add(DataTracker.SerializedEntry.of(EntityAccessor.getCustomName(), Optional.of(this.getTextFor(player))));
 
-                accessor.setId(this.entityId);
-                List<DataTracker.Entry<?>> data = new ArrayList<>();
-                data.add(new DataTracker.Entry<>(EntityAccessor.getCustomName(), Optional.of(this.getTextFor(player))));
-                accessor.setTrackedValues(data);
-
-                player.networkHandler.sendPacket(packet);
+                player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(this.entityId, data));
             }
 
             this.isDirty = false;

@@ -37,8 +37,8 @@ public class EntityHologram extends AbstractHologram {
 
     public void setEntity(Entity entity) {
         if (this.isActive) {
-            ((EntityHologramHolder) this.entity).holoapi_removeEntityHologram(this);
-            ((EntityHologramHolder) entity).holoapi_addEntityHologram(this);
+            ((EntityHologramHolder) this.entity).hologramApi$removeEntityHologram(this);
+            ((EntityHologramHolder) entity).hologramApi$addEntityHologram(this);
         }
 
         this.entity = entity;
@@ -46,13 +46,13 @@ public class EntityHologram extends AbstractHologram {
 
     @Override
     public void show() {
-        ((EntityHologramHolder) this.entity).holoapi_addEntityHologram(this);
+        ((EntityHologramHolder) this.entity).hologramApi$addEntityHologram(this);
         super.show();
     }
 
     @Override
     public void hide() {
-        ((EntityHologramHolder) this.entity).holoapi_removeEntityHologram(this);
+        ((EntityHologramHolder) this.entity).hologramApi$removeEntityHologram(this);
         super.hide();
     }
 

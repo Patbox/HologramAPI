@@ -45,20 +45,20 @@ public class HologramHelper {
 
 
     public static boolean attachToChunk(WorldHologram hologram, ChunkPos pos) {
-        ((WorldHologramHolder) hologram.getWorld()).holoapi_addHologram(hologram, pos);
+        ((WorldHologramHolder) hologram.getWorld()).hologramApi$addHologram(hologram, pos);
         Chunk chunk = hologram.getWorld().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
         if (chunk instanceof HologramHolder holder) {
-            holder.holoapi_addHologram(hologram);
+            holder.hologramApi$addHologram(hologram);
             return true;
         }
         return false;
     }
 
     public static boolean detachFromChunk(WorldHologram hologram, ChunkPos pos) {
-        ((WorldHologramHolder) hologram.getWorld()).holoapi_removeHologram(hologram, pos);
+        ((WorldHologramHolder) hologram.getWorld()).hologramApi$removeHologram(hologram, pos);
         Chunk chunk = hologram.getWorld().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
         if (chunk instanceof HologramHolder holder) {
-            holder.holoapi_removeHologram(hologram);
+            holder.hologramApi$removeHologram(hologram);
             hologram.clearPlayers();
             return true;
         }
