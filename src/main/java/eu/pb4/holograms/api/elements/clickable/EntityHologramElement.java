@@ -22,7 +22,7 @@ public class EntityHologramElement extends AbstractHologramElement {
         this.entityIds.add(entity.getId());
         this.entity = entity;
 
-        if (this.entity.world.getEntityById(this.entity.getId()) != null) {
+        if (this.entity.getWorld().getEntityById(this.entity.getId()) != null) {
             throw new IllegalArgumentException("Entity can't exist in world!");
         }
         this.entity.setUuid(HologramHelper.getUUID());

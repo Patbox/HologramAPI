@@ -31,10 +31,10 @@ public class TestMod implements ModInitializer {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
 
-            WorldHologram hologram = new WorldHologram(player.getWorld(), player.getPos());
+            WorldHologram hologram = new WorldHologram(player.getServerWorld(), player.getPos());
 
             hologram.addText(Text.literal("hello"));
-            hologram.addElement(new EntityHologramElement(getEntityType(false).create(player.world)));
+            hologram.addElement(new EntityHologramElement(getEntityType(false).create(player.getWorld())));
             hologram.addText(Text.literal("test"));
             hologram.addItemStack(Items.POTATO.getDefaultStack(), false);
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
@@ -43,7 +43,7 @@ public class TestMod implements ModInitializer {
                 @Override
                 public void onClick(AbstractHologram hologram, ServerPlayerEntity player, InteractionType type, @Nullable Hand hand, @Nullable Vec3d vec, int entityId) {
                     super.onClick(hologram, player, type, hand, vec, entityId);
-                    hologram.setElement(1, new EntityHologramElement(getEntityType(type == InteractionType.ATTACK).create(player.world)));
+                    hologram.setElement(1, new EntityHologramElement(getEntityType(type == InteractionType.ATTACK).create(player.getWorld())));
                 }
             });
             hologram.addText(Text.literal("434234254234562653247y4575678rt").formatted(Formatting.AQUA));
@@ -78,7 +78,7 @@ public class TestMod implements ModInitializer {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
 
-            WorldHologram hologram = new WorldHologram(player.getWorld(), player.getPos());
+            WorldHologram hologram = new WorldHologram(player.getServerWorld(), player.getPos());
 
             hologram.addText(Text.literal("hello"));
             hologram.addElement(new CubeHitboxHologramElement(1, new Vec3d(0, 0, 0)) {
@@ -119,7 +119,7 @@ public class TestMod implements ModInitializer {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
 
-            PigEntity pig = EntityType.PIG.create(player.world);
+            PigEntity pig = EntityType.PIG.create(player.getWorld());
             pig.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), 0, 0);
 
             System.out.println(pig);
@@ -138,7 +138,7 @@ public class TestMod implements ModInitializer {
             hologram.addItemStack(Items.DIAMOND.getDefaultStack(), true);
 
 
-            player.world.spawnEntity(pig);
+            player.getWorld().spawnEntity(pig);
 
             System.out.println(hologram.getEntityIds());
         } catch (Exception e) {
@@ -151,9 +151,9 @@ public class TestMod implements ModInitializer {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
 
-            PigEntity pig = EntityType.PIG.create(player.world);
+            PigEntity pig = EntityType.PIG.create(player.getWorld());
             pig.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), 0, 0);
-            player.world.spawnEntity(pig);
+            player.getWorld().spawnEntity(pig);
             System.out.println(pig);
 
             EntityHologram hologram = new EntityHologram(pig, new Vec3d(2, 2, 2));
