@@ -8,6 +8,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public interface HologramElement {
     double getHeight();
     Vec3d getOffset();

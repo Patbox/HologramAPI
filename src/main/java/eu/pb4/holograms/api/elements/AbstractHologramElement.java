@@ -10,6 +10,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public abstract class AbstractHologramElement implements HologramElement {
     protected final IntList entityIds = new IntArrayList();
     protected double height;

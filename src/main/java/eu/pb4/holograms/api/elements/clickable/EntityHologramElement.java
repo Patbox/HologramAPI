@@ -14,6 +14,10 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public class EntityHologramElement extends AbstractHologramElement {
     protected final Entity entity;
 

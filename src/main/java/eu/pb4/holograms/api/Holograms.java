@@ -8,6 +8,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public class Holograms {
     public static WorldHologram create(ServerWorld world, Vec3d pos, Text... texts) {
         WorldHologram hologram = new WorldHologram(world, pos);

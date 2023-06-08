@@ -9,6 +9,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public class EmptyHologramElement implements HologramElement {
     @Override
     public double getHeight() {

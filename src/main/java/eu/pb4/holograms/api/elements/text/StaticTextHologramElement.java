@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public class StaticTextHologramElement extends AbstractTextHologramElement {
 
     public StaticTextHologramElement() {

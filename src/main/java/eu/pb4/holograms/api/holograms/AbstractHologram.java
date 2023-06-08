@@ -28,6 +28,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 @SuppressWarnings({"unused"})
 public abstract class AbstractHologram {
     protected final ServerWorld world;

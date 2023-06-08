@@ -5,6 +5,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public class EntityHologram extends AbstractHologram {
     protected Vec3d offset;
     protected Entity entity;
