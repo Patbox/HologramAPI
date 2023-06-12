@@ -21,6 +21,14 @@
     ]
   },
 
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "deprecated"
+      ]
+    }
+  },
+
   "depends": {
   }
 }

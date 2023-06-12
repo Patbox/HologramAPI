@@ -14,6 +14,10 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public class EntityHologramElement extends AbstractHologramElement {
     protected final Entity entity;
 
@@ -22,7 +26,7 @@ public class EntityHologramElement extends AbstractHologramElement {
         this.entityIds.add(entity.getId());
         this.entity = entity;
 
-        if (this.entity.world.getEntityById(this.entity.getId()) != null) {
+        if (this.entity.getWorld().getEntityById(this.entity.getId()) != null) {
             throw new IllegalArgumentException("Entity can't exist in world!");
         }
         this.entity.setUuid(HologramHelper.getUUID());

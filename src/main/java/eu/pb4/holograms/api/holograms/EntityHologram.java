@@ -5,18 +5,22 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public class EntityHologram extends AbstractHologram {
     protected Vec3d offset;
     protected Entity entity;
 
     public EntityHologram(Entity entity, Vec3d offset) {
-        super((ServerWorld) entity.world, entity.getPos().add(offset), VerticalAlign.TOP);
+        super((ServerWorld) entity.getWorld(), entity.getPos().add(offset), VerticalAlign.TOP);
         this.offset = offset;
         this.entity = entity;
     }
 
     public EntityHologram(Entity entity, Vec3d offset, VerticalAlign alignment) {
-        super((ServerWorld) entity.world, entity.getPos().add(offset), alignment);
+        super((ServerWorld) entity.getWorld(), entity.getPos().add(offset), alignment);
         this.offset = offset;
         this.entity = entity;
     }

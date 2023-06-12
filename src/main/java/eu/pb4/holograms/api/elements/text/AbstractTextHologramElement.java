@@ -7,6 +7,10 @@ import net.minecraft.text.Text;
 import java.util.UUID;
 
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public abstract class AbstractTextHologramElement extends AbstractHologramElement {
     protected Text text;
     protected int entityId;

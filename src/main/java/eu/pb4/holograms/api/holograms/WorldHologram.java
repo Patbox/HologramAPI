@@ -5,6 +5,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 
+/**
+ * @deprecated Use <a href="https://github.com/Patbox/polymer">Polymer</a>'s virtual entities instead.
+ */
+@Deprecated
 public class WorldHologram extends AbstractHologram {
     protected ChunkPos chunkPos;
 
