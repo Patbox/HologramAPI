@@ -4,6 +4,7 @@ import eu.pb4.holograms.impl.HologramHelper;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class PlayerManagerMixin {
 
     @Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendScoreboard(Lnet/minecraft/scoreboard/ServerScoreboard;Lnet/minecraft/server/network/ServerPlayerEntity;)V", shift = At.Shift.AFTER))
-    private void hologramApi$sendFakeTeam(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
+    private void hologramApi$sendFakeTeam(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo ci) {
         player.networkHandler.sendPacket(TeamS2CPacket.updateTeam(HologramHelper.getFakeTeam(), true));
     }
 }

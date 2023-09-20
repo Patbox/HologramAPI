@@ -1,14 +1,12 @@
 package eu.pb4.holograms.mixin;
 
 import eu.pb4.holograms.api.holograms.AbstractHologram;
-import eu.pb4.holograms.api.holograms.WorldHologram;
 import eu.pb4.holograms.impl.interfaces.HologramHolder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.ChunkPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,15 +24,6 @@ public class ServerPlayerEntityMixin implements HologramHolder<AbstractHologram>
     @Shadow @Final public MinecraftServer server;
     @Unique
     Set<AbstractHologram> holograms = new HashSet<>();
-
-    @Inject(method = "sendUnloadChunkPacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V"))
-    private void hologramApi$clearHologramFromChunk(ChunkPos chunkPos, CallbackInfo ci) {
-        for (AbstractHologram hologram : new HashSet<>(this.holograms)) {
-            if (hologram instanceof WorldHologram && ((WorldHologram) hologram).getChunkPos().equals(chunkPos)) {
-                hologram.removePlayer(this.asPlayer());
-            }
-        }
-    }
 
     @Inject(method = "onDisconnect", at = @At("HEAD"))
     private void hologramApi$removeFromHologramsOnDisconnect(CallbackInfo ci) {
